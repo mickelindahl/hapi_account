@@ -1,0 +1,23 @@
+{
+  "name": "grassy_user",
+  "version": "1.0.0",
+  "description": "Users management",
+  "main": "index.js",
+  "scripts": {
+    "test": "lab.cmd"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+ssh://git@github.com/mickelindahl/grassy_user.git"
+  },
+  "keywords": [
+    "user",
+    "management"
+  ],
+  "author": "Mikael Lindahl",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/mickelindahl/grassy_user/issues"
+  },
+  "homepage": "https://github.com/mickelindahl/grassy_user#readme"
+}
