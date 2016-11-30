@@ -1,9 +1,21 @@
-## Hapi account
+## Grassy account
 
-A simple library for managing user accounts. Features included.
+A simple library for managing greencargo web-app user accounts. Features included.
 
-* Email verification and password reset
-* JWT authentication with unique salt for each user and device. Thus in addition to JWTs normal behavior (setting expiration date) they can be revoked server side by changing salt.
-* Login based device detection
-* Tracking of user behavior
+* Password reset
+* JWT authentication with unique salt for each user. Can rewoke JWTs by changing salt.
+* Optional onPost promises calls for each route
 
+###Routes
+* login 
+* logout
+* forgotPassword -> resetPassword
+* changePassword
+
+### Table
+account
+* user s046kl
+* password 'secret'
+* salt 
+
+    

@@ -19,5 +19,12 @@
   "bugs": {
     "url": "https://github.com/mickelindahl/grassy_user/issues"
   },
-  "homepage": "https://github.com/mickelindahl/grassy_user#readme"
+  "homepage": "https://github.com/mickelindahl/grassy_user#readme",
+  "devDependencies": {
+    "hapi": "^15.2.0"
+  },
+  "dependencies": {
+    "bcryptjs": "^2.3.0",
+    "jsonwebtoken": "^7.1.9"
+  }
 }
