@@ -16,7 +16,7 @@ const Util = require( 'util' );
 
 let _options;
 
-function isGreencargoUser( request, reply) {
+function isGreencargoUser( request, reply ) {
 
     _options.greencargoUser.findOne( { email: request.payload.email } ).then( user=> {
 
@@ -140,6 +140,75 @@ function handlerCreate( request, reply ) {
         reply( Boom.badImplementation( err.message ) );
 
     } );
+};
+
+function handlerLogin( request, reply ) {
+
+    _options.account.findOne( { user: request.payload.user } ).then( account => {
+
+        let secret = bcrypt.hashSync( account.salt, _options.secret );
+
+        return Jwt.sign( {}, secret, {
+            algorithm: 'HS256',
+            expiresIn: "72h"
+        } );
+    } ).then( jwt=> {
+
+        return _options.account.update( { user: request.payload.user }, { login: true } ).then( ()=> {
+
+            reply( { jwt: jwt } );
+
+        } );
+    } );
+};
+
+function handlerLogout( request, reply ) {
+
+
+    let account = {
+
+        login: true,
+        salt: bcrypt.genSaltSync( 10 )
+
+    };
+
+    _options.account.update( { user: request.payload.user }, account ).then( ()=> {
+
+        reply( 'logged out' );
+
+    } );
+}
+
+function handlerForgotPassword( request, reply ) {
+
+
+    _options.account.findOne( { user: request.payload.user }, account ).then( account => {
+
+        let secret = bcrypt.hashSync( account.salt, _options.secret );
+
+        let jwt = Jwt.sign( {}, secret, {
+            algorithm: 'HS256',
+            expiresIn: "72h"
+        } );
+
+        account.passwordChangeRequested = jwt;
+
+        return _options.account.update( { user: request.payload.user }, account );
+
+    } ).then( ( account )=> {
+
+        return _options.onPostForgotPassword( account, request );
+
+    } ).then( ()=> {
+
+        reply( 'email sent' )
+
+    } ).catch( ( err )=> {
+
+        reply( Boom.badImplementation( err ) )
+
+    } );
+
 }
 
 let config = {};
@@ -147,15 +216,14 @@ let config = {};
 // Route handler
 config.create = {
     pre: [
-        { method: isGreencargoUser},
+        { method: isGreencargoUser },
         { method: verifyUniqueUser },
         { method: encryptPassword },
     ],
     validate: {
         payload: {
-            user: Joi.string().email().required().description( 'User name' ),
+            user: Joi.string().email().required().description( 'User id' ),
             password: Joi.string().required().description( 'User password' ),
-            scope: Joi.array().items( Joi.string().description( 'a scope' ) ).description( 'User scopes' )
         }
     },
     description: 'Create account',
@@ -171,342 +239,45 @@ config.login = {
     ],
     validate: {
         payload: {
-            user: Joi.string().required(),
-            password: Joi.string().required()
+            user: Joi.string().required().description( 'User id' ),
+            password: Joi.string().required().description( 'User password' )
         }
     },
     description: 'Login frontend',
     notes: 'Login to use for frontend',
     tags: ['api', 'account'],
-    handler: function ( request, reply ) {
-
-
-        _options.account.findOne( { user: request.payload.user } ).then( account => {
-
-            let secret=bcrypt.hashSync(account.salt, _options.secret)
-
-
-            let jwt = Jwt.sign( , secret, {
-                algorithm: 'HS256',
-                expiresIn: "72h"
-            } );
-
-
-        } )
-
-
-        let account = {
-
-            login: true,
-
-        };
-
-        let Account = request.server.getModel( 'account' );
-        Account.update( { user: request.payload.user }, account ).exec( ( err, account ) => {
-            const new_token = {
-                uuid: uuid.v4(),
-                user_id: account.id,
-                email: request.payload.email,
-                status: 'auth',
-                scope: account.scope,
-            };
-
-            const Token = request.server.getModel( 'token' );
-
-            Token.create( new_token ).exec( ( err, token ) => {
-                if ( err ) {
-                    return reply( Boom.badImplementation( err.message ) );
-                }
-
-                reply( { jwt: jwt } );
-
-            } );
-        } );
-    }
+    handler: handlerLogin
 };
-
-config.loginBackend = {
-
-    pre: [
-        { method: verifyUser },
-        { method: verifyPassword },
-        { method: verifyAdmin }
-    ],
-    validate: {
-        payload: {
-            email: Joi.string().email().required(),
-            password: Joi.string().required()
-        }
-    },
-    description: 'Login backend',
-    notes: 'Login to use for backend',
-    tags: ['api', 'account'],
-    handler: function ( request, reply ) {
-
-        let Account = request.server.getModel( 'account' );
-        Account.findOne( { email: request.payload.email } ).exec( ( err, account ) => {
-
-            let data = {
-                user_id: account.id,
-                email: account.email,
-            }
-
-            let id_token = Jwt.sign( data, process.env.JWT_SECRET, {
-                algorithm: 'HS256',
-                expiresIn: "12h"
-            } );
-
-
-            debug( request.info.host );
-
-            var d = new Date();
-            d.setTime( d.getTime() + (0.5 * 24 * 60 * 60 * 1000) );
-            var expires = "expires=" + d.toUTCString();
-
-            let cookie = Util.format( 'loredge_jwt=%s; Domain=%s; Path=%s; Expires=%s; HttpOnly',
-                id_token,
-                request.info.host.split( ':' )[0], //important
-                '/',
-                expires
-            );
-
-            // Heroku terminates ssl at the edge of the network so your hapi site will
-            // always be running with a http binding in it's dyno. If you wanted the external
-            // facing site to be https then it's necessary to redirect to https. The
-            // x-forwarded-proto header is set by heroku to specify the originating protocol
-            // of the http request
-            // See: https://devcenter.heroku.com/articles/http-routing#heroku-headers
-            if ( request.headers['x-forwarded-proto'] == 'https' ) {
-                cookie += '; Secure'
-            }
-
-            debug( cookie );
-
-            // Rules to set cookie via header in resonse. Appearantly, setting domain
-            // to / then one can only change the cookie in the browser if on a page
-            // stemming from / e.g. /login /view and /view/myPage will not be able to
-            // change it from. Still it will be available.
-            reply( { id_token: id_token } ).header( 'Set-Cookie', cookie ).code( 201 );
-
-        } )
-    }
-};
-
-if ( process.env.ACCESS_CONTROL_ALLOW_ORIGINS ) {
-
-    config.loginBackend.cors = {
-        origin: process.env.ACCESS_CONTROL_ALLOW_ORIGINS.split( ',' )
-    }
-}
 
 config.logout = {
-    auth: 'simple',
+    auth: 'jwt',
     description: 'Logout from frontend account',
     notes: 'Logout from frontend account',
     tags: ['api', 'account'],
-    handler: function ( request, reply ) {
-
-        const Token = request.server.getModel( 'token' );
-
-        Token.destroy( { uuid: request.auth.credentials.uuid } ).exec( function ( err, token ) {
-            if ( err ) {
-                console.log( err.message );
-            }
-
-            reply( 'logged out' );
-        } );
-    }
-};
-
-config.resendVerificationEmail = {
-    description: 'Resend a verification email',
-    notes: 'Resends a verification email',
-    tags: ['api', 'account'],
-    validate: {
-        payload: {
-            email: Joi.string().email().required(),
-            password: Joi.string().required()
-        }
-    },
-    handler: function ( request, reply ) {
-
-        let Account = request.server.getModel( 'account' );
-
-        Account.findOne( { email: request.payload.email } ).exec( ( err, account ) => {
-            if ( err ) {
-                return reply( Boom.badImplementation( err.message ) );
-            }
-
-            if ( !account ) {
-                return reply( Boom.notFound( 'Account not found' ) );
-            }
-
-            if ( account.verified === true ) {
-                return reply( Boom.badRequest( 'Already verified' ) );
-            }
-
-            request.server.methods.email.sendVerificationEmail( request.payload.email );
-
-            reply( 'Email sent' );
-        } );
-
-    }
+    handler: handlerLogout
 };
 
 config.forgotPassword = {
+    pre: [
+        { method: verifyUser }],
     validate: {
         payload: {
-            email: Joi.string().email().required()
+            user: Joi.string().required().description( 'User id' )
         }
     },
     description: 'Password forgotten',
-    notes: 'To change password when it has been forgotten',
+    notes: 'To change password when it has been forgotten. Need to send email'
+    + ' in onPostForgotPassword that provides a link to a reset page. Then '
+    + 'resetPassword can be used to reset the password. It can be used '
+    + 'during the period the jwt in account field passwordChangeRequest is valid',
     tags: ['api', 'account'],
-    handler: function ( request, reply ) {
-
-        let Account = request.server.getModel( 'account' );
-
-        Account.findOne( { email: request.payload.email } ).exec( ( err, account ) => {
-            if ( err ) {
-                return reply( Boom.badImplementation( err.message ) );
-            }
-
-            if ( !account ) {
-                return reply( Boom.notFound( 'Account not found' ) );
-            }
-
-            //const token = uuid.v1(); //Jwt.sign( { email: account.email }, account.password );
-            //
-            let Token = request.server.getModel( 'token' );
-
-            const new_token = {
-                uuid: uuid.v4(),
-                user_id: account.id,
-                email: account.email,
-                status: 'auth'
-            };
-
-            Token.create( new_token ).then( ()=> {
-
-                const mail_data = {
-                    email: account.email,
-                    token: new_token.uuid
-                };
-
-                request.server.methods.email.sendPasswordResetEmail( mail_data );
-
-                reply( 'email sent' );
-
-            } ).catch( ( err )=> {
-
-                reply( Boom.badImplementation( err ) )
-            } );
-
-
-        } );
-
-    }
+    handler: handlerForgotPassword
 };
 
-config.accountCreated = {
-    description: 'Account created view',
-    notes: 'Show after account have been created',
-    tags: ['api'],
-    handler: function ( request, reply ) {
-        reply.view( 'user', {
-            email: request.url.query.email,
-            type_user_created: true
-        } )
-    }
-};
-
-config.verifyEmail = {
-    description: 'Validate token',
-    notes: 'Validate a token connected to an email address',
-    tags: ['api', 'account'],
-    validate: {
-        params: {
-            token: Joi.string().required().description( 'Unique token' )
-        }
-    },
-    handler: function ( request, reply ) {
-
-        const token_id = request.params.token;
-
-        const Token = request.server.getModel( 'token' );
-
-        Token.findOne( { uuid: token_id } ).exec( ( err, token ) => {
-            if ( err ) {
-                return reply( Boom.badImplementation( err.message ) );
-            }
-            if ( !token ) {
-                return reply( Boom.notFound( 'Invalid token' ) );
-            }
-
-            // TODO: destroy token instead of handling state...
-
-            const used = token.status === 'used' ? true : false;
-
-            if ( !used ) {
-                Token.update( { uuid: token_id }, { status: 'used' } ).exec( function ( err, token ) {
-                    if ( err ) {
-                        console.log( err.message );
-                    }
-                } );
-
-                let Account = request.server.getModel( 'account' );
-
-                Account.update( { email: token.email }, { verified: true } ).exec( ( err, account ) => {
-                    if ( err ) {
-                        console.log( err.message );
-                    }
-
-                    var User = request.server.getModel( 'user' );
-
-                    User.create( {
-                        user_id: account[0].id,
-                        emails: account[0].email,
-                        invites: 4
-                    } ).exec( ( err, user ) => {
-                        if ( err ) {
-                            console.log( err.message );
-                        }
-                    } );
-                } );
-
-            }
-
-            reply.view( 'user', {
-                done: used,
-                link_app: request.server.app.uri + '/downloadapp',
-                type_account_verified: true
-            } );
-        } );
-
-    }
-};
-
-config.resetPassword = {
-    validate: {
-        params: {
-            token: Joi.string().required().description( 'Unique jwt token' )
-        }
-    },
-    description: 'Reset a password',
-    notes: 'Resets a password, called with signed JWT token',
-    tags: ['api', 'account'],
-    handler: function ( request, reply ) {
-
-        reply.view( 'user', {
-            type_reset_password: true
-        } );
-
-    }
-};
 
 config.changePassword = {
+    auth: 'jwt',
     pre: [
-        { method: verifyToken },
         { method: encryptPassword }
     ],
     validate: {

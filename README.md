@@ -16,6 +16,8 @@ A simple library for managing greencargo web-app user accounts. Features include
 account
 * user s046kl
 * password 'secret'
+* email
 * salt 
+* passwordChangeRequested
 
     
