@@ -10,9 +10,8 @@ const uuid = require( 'uuid' );
 const bcrypt = require( 'bcryptjs' );
 const Boom = require( 'boom' );
 const Joi = require( 'joi' );
-const Jwt = require( 'jsonwebtoken' );
+const Hapi_auth_bearer_token=require( 'hapi-auth-bearer-token' );
 const debug = require( 'debug' )( 'account' );
-const Util = require( 'util' );
 
 let _options;
 
@@ -44,7 +43,7 @@ function encryptPassword( request, reply ) {
 
 function isAccount( request, reply ) {
 
-    _options.account.findOne( { email: request.payload.email } ).then( account=> {
+    _options.db.account.findOne( { email: request.payload.email } ).then( account=> {
 
         if ( account ) {
 
@@ -58,34 +57,43 @@ function isAccount( request, reply ) {
 
 }
 
-function verifyJWT( request, reply ) {
+function generateToken( account, status, expires ) {
 
-    _options.account.findOne( { email: request.payload.email } ).then( account=> {
+    const token={
+        account_id: account.id,
+        uuid: uuid.v1(),
+        status: status,
+        expiresAt: expires || new Date(new Date().valueOf()+5*3600*24)
+    };
 
-        let secret = bcrypt.hashSync( _secret, account.salt );
+    return _options.db.token.create(token)
+}
 
-        Jwt.verify( request.headers.authorization, secret,
-            ( err, decoded )=> {
+function verifyToken(request, reply) {
 
-                if ( err ) {
-                    reply( Boom.badRequest( 'Invalid JWT' ) );
-                }
+    const Token = request.server.getModel('token');
 
-                request.auth.credentials = decoded;
+    _options.db.token.findOne({uuid: request.payload.token}).then(token => {
+        if (!token) {
+            return reply(Boom.badRequest('Invalid token'));
+        } else if (token.status=='!auth'){
+            return reply(Boom.badRequest('No authenticated token'));
+        }
 
-                reply.continue();
-
-            }
-        );
-
-        reply( request.payload )
-
-    } );
+        request.payload.user_id=token.user_id;
+        
+        return request.payload
+        
+    }).then(payload=>{
+        
+        reply(request.payload);
+        
+    });
 }
 
 function verifyUser( request, reply ) {
 
-    _options.account.findOne( { email: request.payload.email } ).then( account=> {
+    _options.db.account.findOne( { email: request.payload.email } ).then( account=> {
 
         if ( !account ) {
             return reply( Boom.notFound( 'Account not found' ) );
@@ -106,7 +114,7 @@ function verifyUser( request, reply ) {
 
 function verifyPassword( request, reply ) {
 
-    _options.account.findOne( { user: request.payload.user } ).then( account => {
+    _options.db.account.findOne( { user: request.payload.user } ).then( account => {
 
         bcrypt.compare( request.payload.password, account.password, function ( err, res ) {
 
@@ -125,17 +133,24 @@ function handlerCreate( request, reply ) {
 
     let account = request.payload;
     account.verified = _options.verified;
-    account.salt = bcrypt.genSaltSync( 10 );
 
-    _options.account.create( account ).then( account=> {
+    _options.db.account.create( account ).then( account=> {
 
         return _options.onPostCreate( account, request ).then( ()=> {
 
-            reply( account ).code( 201 );
+            return account
 
         } )
 
-    } ).catch( err=> {
+    } ).then(account=>{
+
+        return generateToken(account, 'new');
+
+    } ).then(token=>{
+
+        reply( 'Account created' ).code( 201 );
+
+    }).catch( err=> {
 
         reply( Boom.badImplementation( err.message ) );
 
@@ -144,64 +159,54 @@ function handlerCreate( request, reply ) {
 
 function handlerLogin( request, reply ) {
 
-    _options.account.findOne( { user: request.payload.user } ).then( account => {
+    _options.db.account.findOne( { user: request.payload.user } ).then( account => {
 
-        let secret = bcrypt.hashSync( account.salt, _options.secret );
+        return _options.db.token.findOne({account_id:account.id}).then(token=>{
 
-        return Jwt.sign( {}, secret, {
-            algorithm: 'HS256',
-            expiresIn: "72h"
-        } );
-    } ).then( jwt=> {
+            if (!token){
 
-        return _options.account.update( { user: request.payload.user }, { login: true } ).then( ()=> {
+                return generateToken(account, 'login')
 
-            reply( { jwt: jwt } );
+            }else return token
 
-        } );
-    } );
+        })
+    } ).then(token=>{
+
+        reply( { token: token.uuid } );
+
+
+    }).catch(err=>{
+
+        reply( Boom.badImplementation( err.message ) );
+
+    });
 };
 
 function handlerLogout( request, reply ) {
 
-
-    let account = {
-
-        login: true,
-        salt: bcrypt.genSaltSync( 10 )
-
-    };
-
-    _options.account.update( { user: request.payload.user }, account ).then( ()=> {
+    _options.db.token.destroy({uuid: request.credentials.token}).then(()=>{
 
         reply( 'logged out' );
 
-    } );
+    });
 }
 
 function handlerForgotPassword( request, reply ) {
 
 
-    _options.account.findOne( { user: request.payload.user }, account ).then( account => {
+    _options.db.account.findOne( { user: request.payload.user }, account ).then( account => {
 
-        let secret = bcrypt.hashSync( account.salt, _options.secret );
+        let expires = new Date(new Date().valueOf()+3600*24);
 
-        let jwt = Jwt.sign( {}, secret, {
-            algorithm: 'HS256',
-            expiresIn: "72h"
-        } );
+        return generateToken(account, 'forgot', expires);
 
-        account.passwordChangeRequested = jwt;
+    } ).then( ( token )=> {
 
-        return _options.account.update( { user: request.payload.user }, account );
-
-    } ).then( ( account )=> {
-
-        return _options.onPostForgotPassword( account, request );
+        return _options.onPostForgotPassword( token, request );
 
     } ).then( ()=> {
 
-        reply( 'email sent' )
+        reply( 'Forgot token created' )
 
     } ).catch( ( err )=> {
 
@@ -211,18 +216,35 @@ function handlerForgotPassword( request, reply ) {
 
 }
 
+function handlerChangePassword( request, reply ) => {
+
+    let Account = request.server.getModel( 'account' );
+
+    Account.update( { user: request.payload.user },
+        { password: request.payload.password } ).then( account  => {
+
+        if ( !account ) {
+            return reply( Boom.notFound( 'account not found' ) );
+        }
+
+        reply( 'password updated' );
+    } );
+
+}
+
+
 let config = {};
 
 // Route handler
 config.create = {
     pre: [
         { method: isGreencargoUser },
-        { method: verifyUniqueUser },
+        { method: isAccount },
         { method: encryptPassword },
     ],
     validate: {
         payload: {
-            user: Joi.string().email().required().description( 'User id' ),
+            user: Joi.string().required().description( 'User id' ),
             password: Joi.string().required().description( 'User password' ),
         }
     },
@@ -250,7 +272,7 @@ config.login = {
 };
 
 config.logout = {
-    auth: 'jwt',
+    auth: 'simple',
     description: 'Logout from frontend account',
     notes: 'Logout from frontend account',
     tags: ['api', 'account'],
@@ -274,11 +296,11 @@ config.forgotPassword = {
     handler: handlerForgotPassword
 };
 
-
 config.changePassword = {
-    auth: 'jwt',
+    auth: 'simple',
     pre: [
-        { method: encryptPassword }
+        {  method: verifyUser},
+        {method: encryptPassword }
     ],
     validate: {
         payload: {
@@ -289,82 +311,61 @@ config.changePassword = {
     tags: ['api', 'account'],
     description: 'Change a password',
     notes: 'To change a password',
-    handler: ( request, reply ) => {
-
-        let Account = request.server.getModel( 'account' );
-
-        Account.findOne( { id: request.payload.user_id } ).exec( ( err, account ) => {
-            if ( err ) {
-                return reply( Boom.badImplementation( err.message ) );
-            }
-
-            if ( !account ) {
-                return reply( Boom.notFound( 'account not found' ) );
-            }
-
-            Account.update( { id: request.payload.user_id }, { password: request.payload.password } ).exec( ( err, account ) => {
-                if ( err ) {
-                    return reply( Boom.notFound( 'account not found' ) );
-                }
-
-                if ( !account || account.length !== 1 ) {
-                    return reply( Boom.notFound( 'account not found' ) );
-                }
-
-                reply( 'password updated' );
-            } );
-        } );
-    }
-};
-
-var after = function ( server, next ) {
-
-    // Register routes
-    server.route( [
-        { method: 'POST', path: '/account/invite', config: config.createWithInvite },
-        { method: 'POST', path: '/account', config: config.create },
-        { method: 'POST', path: '/account/login', config: config.login },
-        { method: 'POST', path: '/account/loginBackend', config: config.loginBackend },
-        { method: 'POST', path: '/account/logout', config: config.logout },
-        { method: 'POST', path: '/account/forgotPassword', config: config.forgotPassword },
-        { method: 'GET', path: '/account/created', config: config.accountCreated },
-        { method: 'GET', path: '/account/verifyEmail/{token}', config: config.verifyEmail },
-        {
-            method: 'POST',
-            path: '/account/resendVerificationEmail',
-            config: config.resendVerificationEmail
-        },
-        { method: 'GET', path: '/account/resetPassword/{token}', config: config.resetPassword },
-        { method: 'POST', path: '/account/changePassword', config: config.changePassword },
-
-        // Old routes keep for old versions of Loredge
-        //{ method: 'POST', path: '/account/invite', config: config.createWithInvite }, // Need to change?
-        { method: 'POST', path: '/login', config: config.login },
-        { method: 'POST', path: '/logout', config: config.logout },
-        { method: 'POST', path: '/forgotPassword', config: config.forgotPassword },
-        { method: 'GET', path: '/resetPassword/{token}', config: config.resetPassword },
-        { method: 'POST', path: '/changePassword', config: config.changePassword }
-
-    ] );
-
-    debug( 'Routes registered' );
-
-    next();
+    handler: handlerChangePassword
 };
 
 exports.register = function ( server, options, next ) {
 
     _options = options;
 
-    // auth strategy for logout
-    if ( options.auth ) {
-        config.logout.auth = options.auth;
-    }
+    // First register hapi auth bearer token plugin and strategyt
+    server.register( {
 
-    // Dependencies
-    server.dependency( 'hapi-auth-bearer-token', after );
+        register: Hapi_auth_bearer_token,
 
-    next();
+    } ).then( ()=> {
+
+        return server.auth.strategy( 'simple', 'bearer-access-token', {
+            validateFunc: function ( uuid, callback ) {
+
+                debug( 'uuid', uuid )
+
+                const request = this;
+
+                request.auth.credentials = { token: uuid }; // to be used at logout
+
+                _options.db.token.findOne( { uuid: uuid } ).then( a_token => {
+
+                    if ( a_token ) {
+                        callback( null, true, a_token );
+                    } else {
+                        callback( null, false, a_token );
+                    }
+                } ).catch( err=> {
+
+                    callback( err )
+
+                } );
+            }
+        } )
+
+    } ).then( ()=> {
+
+        // Register routes
+        server.route( [
+
+            { method: 'POST', path: _options.base_path, config: config.create },
+            { method: 'POST', path: _options.base_path + '/login', config: config.login },
+            { method: 'POST', path: _options.base_path + '/logout', config: config.logout },
+            { method: 'POST', path: _options.base_path + '/forgotPassword', config: config.forgotPassword },
+            { method: 'POST', path: _options.base_path + '/changePassword', config: config.changePassword },
+
+        ] );
+
+        debug( 'Routes registered' );
+
+        next();
+    } )
 };
 
 exports.register.attributes = {
