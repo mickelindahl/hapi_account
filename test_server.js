@@ -4,7 +4,9 @@
 
 'use strict';
 
+const account = require( "./index.js" );
 const Hapi = require( 'hapi' );
+const hapi_waterline = require( 'hapi-waterline' );
 const Promise = require( 'bluebird' );
 const debug = require( 'debug' )( 'hapi_account:test_server' )
 
@@ -35,15 +37,14 @@ function get_server( options ) {
 
     return {
         promise:server.register( [
-        // require( 'vision' ),
         {
-            register: require( 'hapi-waterline' ),
+            register: hapi_waterline,
             options: options_hw,
         },
-        // {
-        //     register: require( './index.js' ),
-        //     options: options
-        // }
+        {
+            register: account,
+            options: options
+        }
 
     ] )
         .then( ()=> {
