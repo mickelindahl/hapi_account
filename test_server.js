@@ -4,7 +4,7 @@
 
 'use strict';
 
-const account = require( "./index.js" );
+const account = require( "./lib/index.js" );
 const Hapi = require( 'hapi' );
 const hapi_waterline = require( 'hapi-waterline' );
 const Promise = require( 'bluebird' );

@@ -45,16 +45,20 @@ lab.experiment( "Account", ()=> {
 
     // .stop()
 
-    lab.test( 'Testing create account',
+    lab.test( 'Testing create account verify account false',
         ( done ) => {
+
+            let options={
+                verfiyAccount:false
+            };
 
             start_server( options ).then( ( server )=> {
 
                 let options = {
                     method: "POST",
-                    url: "/account",
+                    url: "/",
                     payload: {
-                        email: _email,
+                        email: 'me@help.se',
                         password: 'secret',
                         scope:['admin']
                     },
@@ -65,9 +69,7 @@ lab.experiment( "Account", ()=> {
                 server.inject( options, response => {
 
                     code.expect( response.statusCode ).to.equal( 201 );
-                    code.expect( response.result.verified ).to.be.false();
-                    code.expect( response.result.email ).to.equal( options.payload.email );
-                    code.expect( response.result.password ).not.to.equal( options.payload.password ); // return hashed password
+                    code.expect( response.result ).to.equal('Account created');
                     done();
 
                 } );
@@ -82,26 +84,6 @@ lab.experiment( "Account", ()=> {
                 debug(err)
             })
 
-            let options = {
-                method: "POST",
-                url: "/account",
-                payload: {
-                    email: _email,
-                    password: 'secret',
-                    scope:['admin']
-                },
-                credentials: {} // To bypass auth strategy
-            };
-
-            _server.inject( options, ( response )=> {
-
-                code.expect( response.statusCode ).to.equal( 201 );
-                code.expect( response.result.verified ).to.be.false();
-                code.expect( response.result.email ).to.equal( options.payload.email );
-                code.expect( response.result.password ).not.to.equal( options.payload.password ); // return hashed password
-                done();
-
-            } );
         } );
 
     // lab.test( 'Testing resend verification email',

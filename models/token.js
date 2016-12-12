@@ -11,7 +11,6 @@ module.exports = {
     attributes: {
         account_id:'integer',
         uuid: 'string',
-        email: 'email',
         status: 'string',
         expireAt: 'datetime'
     }
