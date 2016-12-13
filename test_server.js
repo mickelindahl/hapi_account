@@ -35,6 +35,8 @@ function get_server( options ) {
 
     server.connection( { host: '0.0.0.0', port: 3000 } );
 
+    // if (options.delete) delete options_hw.connection;
+
     return {
         promise:server.register( [
         {
@@ -56,25 +58,24 @@ function get_server( options ) {
     }
 }
 
-function start_servet( options ) {
+function start_server( options ) {
     let result = get_server( options );
-
-    debug( options )
 
     let promise = new Promise( ( resolve, reject )=> {
         result.promise.then( ()=> {
 
-            result.server.initialize( ( err )=> {
+            // result.server.start( ( err )=> {
+                // debug(result.server.plugins['hapi-waterline'].orm.adapterDictionary.adapters.memory)
+                resolve({server: result.server,
+                    adapter:options_hw.adapters.memory})
 
-                resolve( result.server )
-
-            } )
+            // } )
         } );
     } )
 
     return promise
 }
 
-module.exports = start_servet;
+module.exports = start_server;
 
 

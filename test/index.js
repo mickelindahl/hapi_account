@@ -18,98 +18,226 @@ let lab = exports.lab = Lab.script();
 
 // the order of tests matters
 
+let options_create = {
+    method: "POST",
+    url: "/",
+    payload: {
+        email: 'me@help.se',
+        password: 'secret',
+        scope:['admin']
+    },
+    credentials: {} // To bypass auth strategy
+};
+
+let options_login = {
+    method: "POST",
+    url: "/login",
+    payload: {
+        email: 'me@help.se',
+        password: 'secret'
+    },
+    credentials: {} // To bypass auth strategy
+};
+
+let options_logout = {
+    method: "POST",
+    url: "/logout",
+    payload: {
+        token: null,
+    },
+    headers:{Authorization:null}
+    // credentials: {} // To bypass auth strategy
+};
+
 lab.experiment( "Account", ()=> {
 
-    // lab.before( { timeout: 3000 }, function ( done ) {
-    //     var iv = setInterval( function () {
-    //         if ( _server.app.readyForTest == true ) {
-    //             clearInterval( iv );
-    //
-    //             //mock
-    //             _server.methods.tracking.accountCreated = ( options )=> {};
-    //             _server.methods.email.sendVerificationEmail = ( options )=> {};
-    //             _server.methods.email.sendPasswordResetEmail = ( options )=> {};
-    //
-    //             _server.initialize( ()=> {
-    //
-    //                 let Invite = _server.getModel( 'invite' );
-    //                 Invite.create( { code: _code } ).exec( ( err, models )=> {
-    //
-    //                     done();
-    //
-    //                 } )
-    //             } )
-    //         }
-    //     }, 50 );
-    // } );
-
-    // .stop()
-
-    lab.test( 'Testing create account verify account false',
+    lab.test( 'Testing create with verifyAccount true and logout',
         ( done ) => {
 
-            let options={
-                verfiyAccount:false
-            };
+            start_server( { keyId:'email', verifyAccount:true} ).then( result => {
 
-            start_server( options ).then( ( server )=> {
-
-                let options = {
-                    method: "POST",
-                    url: "/",
-                    payload: {
-                        email: 'me@help.se',
-                        password: 'secret',
-                        scope:['admin']
-                    },
-                    credentials: {} // To bypass auth strategy
-                };
-
-
-                server.inject( options, response => {
+                result.server.inject( options_create, response => {
 
                     code.expect( response.statusCode ).to.equal( 201 );
                     code.expect( response.result ).to.equal('Account created');
-                    done();
 
-                } );
+                    result.server.inject( options_login, response => {
 
+                        options_logout.headers.Authorization='Bearer '+response.result.token;
 
-                return server
-            } ).then(server=>{
+                        result.server.inject( options_logout, response => {
 
-                server.stop();
+                            code.expect( response.statusCode ).to.equal( 200 );
+                            code.expect( response.result ).to.be.equal('Logged out');
+                            debug(result.adapter);
 
-            }).catch(err=>{
-                debug(err)
-            })
-
+                            new Promise(resolve=>{
+                                result.adapter.teardown(resolve); // fails otherwise
+                            }).then(()=>{
+                                result.server.stop({timeout:200}, done);
+                            });
+                        } );
+                    })
+                })
+            } )
         } );
 
-    // lab.test( 'Testing resend verification email',
-    //     ( done ) => {
-    //
-    //         let Account = _server.getModel( 'account' );
-    //         Account.find( { email: _email } ).exec( ( err, models )=> {
-    //
-    //             let options = {
-    //                 method: "POST",
-    //                 url: "/account/resendVerificationEmail",
-    //                 payload: {
-    //                     email: _email,
-    //                     password: 'secret'
-    //                 }
-    //             };
-    //
-    //             _server.inject( options, ( response )=> {
-    //
-    //                 code.expect( response.statusCode ).to.equal( 200 );
-    //                 code.expect( response.payload ).to.equal( 'Email sent' );
-    //                 done();
-    //
-    //             } );
-    //         } )
-    //     } );
+    lab.test( 'Testing create and login with verifyAccount false',
+        ( done ) => {
+
+            start_server( { keyId:'email', verifyAccount:false} ).then( result => {
+
+                result.server.inject( options_create, response => {
+
+                    code.expect( response.statusCode ).to.equal( 201 );
+                    code.expect( response.result ).to.equal('Account created');
+
+                    options_login.payload.email='me@help.se';
+
+                    result.server.inject( options_login, response => {
+
+                        code.expect( response.statusCode ).to.equal( 400 );
+                        code.expect( response.result.message ).to.equal( 'Account not verified');
+                        debug(result.adapter);
+
+                        new Promise(resolve=>{
+                            result.adapter.teardown(resolve); // fails otherwise
+                        }).then(()=>{
+                            result.server.stop({timeout:200}, done);
+                        });
+                    } );
+                })
+            } )
+        } );
+
+    lab.test( 'Testing create account onPostCreate throw error and unused event',
+        ( done ) => {
+
+            let events=[
+                {type:'onPostCreate', method:(request, next)=>{throw 'onPostCreate error'}},
+                {type:'onPostForgotPassword', method:()=>{}}
+            ];
+
+            start_server( { verifyAccount:false, events:events} ).then( result => {
+
+                result.server.inject( options_create, response => {
+
+                    code.expect( response.statusCode ).to.equal( 500 );
+                    code.expect( response.result.error  ).to.equal('Internal Server Error');
+
+                    new Promise(resolve=>{
+                        result.adapter.teardown(resolve); // fails otherwise
+                    }).then(()=>{
+                        result.server.stop({timeout:200}, done);
+                    });
+                } );
+            } )
+        } );
+
+    lab.test( 'Testing login throw error',
+        ( done ) => {
+
+            let events=[
+                {type:'onPostLogin', method:(request, next)=>{throw 'onPostLogin error'}}];
+
+             start_server( { keyId:'email', verifyAccount:true, events:events} ).then( result => {
+
+                result.server.inject( options_create, response => {
+                    result.server.inject( options_login, response => {
+
+                        code.expect( response.statusCode ).to.equal( 500 );
+                        code.expect( response.result.error  ).to.equal('Internal Server Error');
+
+                        new Promise(resolve=>{
+                            result.adapter.teardown(resolve); // fails otherwise
+                        }).then(()=>{
+                            result.server.stop({timeout:200}, done);
+                        });
+                    });
+                })
+            } )
+        } );
+
+    lab.test( 'Testing login wrong user',
+        ( done ) => {
+
+            start_server( { keyId:'email', verifyAccount:true} ).then( result => {
+
+                result.server.inject( options_create, response => {
+
+                    options_login.payload.email='not@right';
+
+                    result.server.inject( options_login, response => {
+
+                        code.expect( response.statusCode ).to.equal( 404 );
+                        code.expect( response.result.message ).to.equal( 'Account not found');
+                        debug(result.adapter);
+
+                        new Promise(resolve=>{
+                            result.adapter.teardown(resolve); // fails otherwise
+                        }).then(()=>{
+                            result.server.stop({timeout:200}, done);
+                        });
+                    } );
+                })
+            } )
+        } );
+
+    lab.test( 'Testing login token already exist',
+        ( done ) => {
+
+            start_server( { keyId:'email', verifyAccount:true} ).then( result => {
+
+                result.server.inject( options_create, response => {
+
+                    options_login.payload.email='me@help.se';
+                    // options_logout.headers.Authorization='Bearer '+response.result.token;
+
+                    result.server.inject( options_login, response => {
+                        result.server.inject( options_login, response => {
+
+                            code.expect( response.statusCode ).to.equal( 200 );
+                            code.expect( response.result.token ).to.be.a.string();
+                            debug(result.adapter);
+
+                            new Promise(resolve=>{
+                                result.adapter.teardown(resolve); // fails otherwise
+                            }).then(()=>{
+                                result.server.stop({timeout:200}, done);
+                            });
+                        } );
+                    })
+                })
+            } )
+        } );
+
+    lab.test( 'Testing login wrong password',
+        ( done ) => {
+
+            start_server( { keyId:'email', verifyAccount:true} ).then( result => {
+
+                result.server.inject( options_create, response => {
+
+                    options_login.payload.password='wrong';
+
+                    result.server.inject( options_login, response => {
+
+                        code.expect( response.statusCode ).to.equal( 403 );
+                        code.expect( response.result.message ).to.equal( 'Wrong password');
+                        debug(result.adapter);
+
+                        new Promise(resolve=>{
+                            result.adapter.teardown(resolve); // fails otherwise
+                        }).then(()=>{
+                            result.server.stop({timeout:200}, done);
+                        });
+                    } );
+                })
+            } )
+        } );
+
+
+
     //
     // lab.test( 'Testing resend verification email already verified',
     //     ( done ) => {
