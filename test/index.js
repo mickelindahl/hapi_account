@@ -82,14 +82,14 @@ let options_resetPassword = {
 // The order of tests matters!!!
 lab.experiment( "Account", ()=> {
 
-    lab.test( 'Testing create with verifyAccount true, pre event and basePath, and logout',
+    lab.test( 'Testing create with accountVerified true, pre event and basePath, and logout',
         ( done ) => {
 
             let events=[
                 {type:'onPreCreate', method: (request, reply)=>{ debug('attached onPre'); reply()}}
             ];
 
-            let options = { keyId:'email', verifyAccount:true,
+            let options = { keyId:'email', accountVerified:true,
                 events:events, basePath:'/assume/'};
 
             options_create.url='/assume';
@@ -128,10 +128,10 @@ lab.experiment( "Account", ()=> {
             } )
         } );
 
-    lab.test( 'Testing create and login with verifyAccount false',
+    lab.test( 'Testing create and login with accountVerified false',
         ( done ) => {
 
-            start_server( { keyId:'email', verifyAccount:false} ).then( result => {
+            start_server( { keyId:'email', accountVerified:false} ).then( result => {
 
                 result.server.inject( options_create, response => {
 
@@ -163,7 +163,7 @@ lab.experiment( "Account", ()=> {
                 {type:'onPostForgotPassword', method:()=>{}}
             ];
 
-            start_server( { verifyAccount:false, events:events} ).then( result => {
+            start_server( { accountVerified:false, events:events} ).then( result => {
 
                 result.server.inject( options_create, response => {
 
@@ -182,7 +182,7 @@ lab.experiment( "Account", ()=> {
     lab.test( 'Testing create account exist',
         ( done ) => {
 
-            start_server( { keyId:'email', verifyAccount:true} ).then( result => {
+            start_server( { keyId:'email', accountVerified:true} ).then( result => {
 
                 result.server.inject( options_create, response => {
 
@@ -209,7 +209,7 @@ lab.experiment( "Account", ()=> {
                 method:(request, next)=>{throw 'onPostLogin error'}}
             ];
 
-            let options={ keyId:'email', verifyAccount:true,
+            let options={ keyId:'email', accountVerified:true,
                 events:events, expire:{login:'1 * * * *'}}
 
             start_server( options).then( result => {
@@ -233,7 +233,7 @@ lab.experiment( "Account", ()=> {
     lab.test( 'Testing login wrong user',
         ( done ) => {
 
-            start_server( { keyId:'email', verifyAccount:true} ).then( result => {
+            start_server( { keyId:'email', accountVerified:true} ).then( result => {
 
                 result.server.inject( options_create, response => {
 
@@ -257,7 +257,7 @@ lab.experiment( "Account", ()=> {
     lab.test( 'Testing login',
         ( done ) => {
 
-            start_server( { keyId:'email', verifyAccount:true} ).then( result => {
+            start_server( { keyId:'email', accountVerified:true} ).then( result => {
 
                 result.server.inject( options_create, response => {
 
@@ -283,7 +283,7 @@ lab.experiment( "Account", ()=> {
     lab.test( 'Testing login wrong password',
         ( done ) => {
 
-            start_server( { keyId:'email', verifyAccount:true} ).then( result => {
+            start_server( { keyId:'email', accountVerified:true} ).then( result => {
 
                 result.server.inject( options_create, response => {
 
@@ -316,7 +316,7 @@ lab.experiment( "Account", ()=> {
                 {type:'onPostLogout',
                     method:(request, next)=>{throw 'onPostLogout error'}}];
 
-            let options= { keyId:'email', verifyAccount:true, events:events}
+            let options= { keyId:'email', accountVerified:true, events:events}
 
             start_server(options).then( result => {
 
@@ -352,7 +352,7 @@ lab.experiment( "Account", ()=> {
                 {type:'onPostLogout',
                     method:(request, next)=>{throw 'onPostLogout error'}}];
 
-            let options= { keyId:'email', verifyAccount:true, events:events}
+            let options= { keyId:'email', accountVerified:true, events:events}
 
             start_server(options).then( result => {
 
@@ -384,7 +384,7 @@ lab.experiment( "Account", ()=> {
     lab.test( 'Testing forgot password',
         ( done ) => {
 
-            start_server( { keyId:'email', verifyAccount:true} ).then( result => {
+            start_server( { keyId:'email', accountVerified:true} ).then( result => {
 
                 result.server.inject( options_create, response => {
 
@@ -410,7 +410,7 @@ lab.experiment( "Account", ()=> {
                 {type:'onPostForgotPassword',
                     method:(request, next)=>{throw 'onPostForgotPassword error'}}];
 
-             let options = { keyId:'email', verifyAccount:true,
+             let options = { keyId:'email', accountVerified:true,
                  events:events, expire:{forgotPassword: '0 * * * * '}}
 
              start_server( options ).then( result => {
@@ -434,7 +434,7 @@ lab.experiment( "Account", ()=> {
 
     lab.test( 'Testing change password',
         ( done ) => {
-            start_server( { keyId: 'email', verifyAccount: true } ).then( result => {
+            start_server( { keyId: 'email', accountVerified: true } ).then( result => {
 
                 result.server.inject( options_create, response => {
 
@@ -467,7 +467,7 @@ lab.experiment( "Account", ()=> {
                 }
             }];
 
-            start_server( { keyId: 'email', verifyAccount: true, events: events } ).then( result => {
+            start_server( { keyId: 'email', accountVerified: true, events: events } ).then( result => {
                 result.server.inject( options_create, response => {
                     result.server.inject( options_login, response => {
 
@@ -515,7 +515,7 @@ lab.experiment( "Account", ()=> {
             },
             ];
 
-            let options = { keyId: 'email', verifyAccount: false, events: events }
+            let options = { keyId: 'email', accountVerified: false, events: events }
 
             start_server( options ).then( result => {
 
@@ -548,7 +548,7 @@ lab.experiment( "Account", ()=> {
 
             const EventEmitter = require( 'events' );
 
-            let options = { keyId: 'email', verifyAccount: false}
+            let options = { keyId: 'email', accountVerified: false}
 
             start_server( options ).then( result => {
 
@@ -598,7 +598,7 @@ lab.experiment( "Account", ()=> {
                 }
             }];
 
-            let options = { keyId: 'email', verifyAccount: false, events: events }
+            let options = { keyId: 'email', accountVerified: false, events: events }
 
             start_server( options ).then( result => {
 
@@ -648,7 +648,7 @@ lab.experiment( "Account", ()=> {
             },
             ];
 
-            let options = { keyId: 'email', verifyAccount: false, events: events }
+            let options = { keyId: 'email', accountVerified: false, events: events }
 
             start_server( options ).then( result => {
 
@@ -681,7 +681,7 @@ lab.experiment( "Account", ()=> {
 
             let options = {
                 keyId: 'email',
-                verifyAccount: false,
+                accountVerified: false,
                 expire: { create: 2 },
                 cronTime: '*/2 * * * * *'
             };

@@ -563,7 +563,7 @@
           <div class="failures">0</div>
           <div class="skipped">0</div>
           <div class="test-count">19</div>
-          <div class="duration">20032</div>
+          <div class="duration">18595</div>
       </div>
       <div id="filters">
           <input type="checkbox" checked="" onchange="filter(this)" value="success" id="show-success">
@@ -585,136 +585,136 @@
           <tbody>
           <tr class="show Account success">
               <td class="test-id">1</td>
-              <td class="test-title">Account Testing create with verifyAccount true, pre event and basePath, and logout
+              <td class="test-title">Account Testing create with accountVerified true, pre event and basePath, and logout
                   
               </td>
-              <td class="test-duration">1051</td>
+              <td class="test-duration">744</td>
           </tr>
           <tr class="show Account success">
               <td class="test-id">2</td>
-              <td class="test-title">Account Testing create and login with verifyAccount false
+              <td class="test-title">Account Testing create and login with accountVerified false
                   
               </td>
-              <td class="test-duration">517</td>
+              <td class="test-duration">353</td>
           </tr>
           <tr class="show Account success">
               <td class="test-id">3</td>
               <td class="test-title">Account Testing create account onPostCreate throw error and unused event
                   
               </td>
-              <td class="test-duration">517</td>
+              <td class="test-duration">350</td>
           </tr>
           <tr class="show Account success">
               <td class="test-id">4</td>
               <td class="test-title">Account Testing create account exist
                   
               </td>
-              <td class="test-duration">564</td>
+              <td class="test-duration">382</td>
           </tr>
           <tr class="show Account success">
               <td class="test-id">5</td>
               <td class="test-title">Account Testing login throw error and with expire in options
                   
               </td>
-              <td class="test-duration">944</td>
+              <td class="test-duration">654</td>
           </tr>
           <tr class="show Account success">
               <td class="test-id">6</td>
               <td class="test-title">Account Testing login wrong user
                   
               </td>
-              <td class="test-duration">462</td>
+              <td class="test-duration">379</td>
           </tr>
           <tr class="show Account success">
               <td class="test-id">7</td>
               <td class="test-title">Account Testing login
                   
               </td>
-              <td class="test-duration">1220</td>
+              <td class="test-duration">913</td>
           </tr>
           <tr class="show Account success">
               <td class="test-id">8</td>
               <td class="test-title">Account Testing login wrong password
                   
               </td>
-              <td class="test-duration">844</td>
+              <td class="test-duration">583</td>
           </tr>
           <tr class="show Account success">
               <td class="test-id">9</td>
               <td class="test-title">Account Testing logout unauthorized
                   
               </td>
-              <td class="test-duration">841</td>
+              <td class="test-duration">577</td>
           </tr>
           <tr class="show Account success">
               <td class="test-id">10</td>
               <td class="test-title">Account Testing logout trow error
                   
               </td>
-              <td class="test-duration">846</td>
+              <td class="test-duration">576</td>
           </tr>
           <tr class="show Account success">
               <td class="test-id">11</td>
               <td class="test-title">Account Testing forgot password
                   
               </td>
-              <td class="test-duration">470</td>
+              <td class="test-duration">375</td>
           </tr>
           <tr class="show Account success">
               <td class="test-id">12</td>
               <td class="test-title">Account Testing forgot password throw error with expire 
                   
               </td>
-              <td class="test-duration">461</td>
+              <td class="test-duration">300</td>
           </tr>
           <tr class="show Account success">
               <td class="test-id">13</td>
               <td class="test-title">Account Testing change password
                   
               </td>
-              <td class="test-duration">1237</td>
+              <td class="test-duration">872</td>
           </tr>
           <tr class="show Account success">
               <td class="test-id">14</td>
               <td class="test-title">Account Testing change password trow error
                   
               </td>
-              <td class="test-duration">1232</td>
+              <td class="test-duration">828</td>
           </tr>
           <tr class="show Account success">
               <td class="test-id">15</td>
               <td class="test-title">Account Testing verify account
                   
               </td>
-              <td class="test-duration">1469</td>
+              <td class="test-duration">1349</td>
           </tr>
           <tr class="show Account success">
               <td class="test-id">16</td>
               <td class="test-title">Account Testing verify account invalid token
                   
               </td>
-              <td class="test-duration">482</td>
+              <td class="test-duration">1020</td>
           </tr>
           <tr class="show Account success">
               <td class="test-id">17</td>
               <td class="test-title">Account Testing verify account errort
                   
               </td>
-              <td class="test-duration">1461</td>
+              <td class="test-duration">1860</td>
           </tr>
           <tr class="show Account success">
               <td class="test-id">18</td>
               <td class="test-title">Account Testing reset password
                   
               </td>
-              <td class="test-duration">1946</td>
+              <td class="test-duration">2697</td>
           </tr>
           <tr class="show Account success">
               <td class="test-id">19</td>
               <td class="test-title">Account Testing cron job for destroying expired tokens
                   
               </td>
-              <td class="test-duration">3464</td>
+              <td class="test-duration">3779</td>
           </tr>
           </tbody>
       </table>
@@ -2109,7 +2109,7 @@
                             <td class="line" data-tooltip>142</td>
                             <td class="lint empty"></td>
                             <td class="hits" data-tooltip>19</td>
-                            <td class="source">    account.verified &#x3D; request.server.plugins[&#x27;hapi-account&#x27;].options.verifyAccount ?</td>
+                            <td class="source">    account.verified &#x3D; request.server.plugins[&#x27;hapi-account&#x27;].options.accountVerified ?</td>
                         </tr>
                         <tr class="hit">
                             <td class="line" data-tooltip>143</td>
@@ -4719,289 +4719,289 @@
                             <td class="line" data-tooltip>577</td>
                             <td class="lint empty"></td>
                             <td class="hits" data-tooltip></td>
-                            <td class="source"> *   - &#x60;basePath&#x60;  base path for route.</td>
+                            <td class="source"> *   - &#x60;accountVerified&#x60; If true then verified property in account is set to false.</td>
                         </tr>
                         <tr class="hit">
                             <td class="line" data-tooltip>578</td>
                             <td class="lint empty"></td>
                             <td class="hits" data-tooltip></td>
-                            <td class="source"> *   - &#x60;cronTime&#x60; The time to fire off your job. This can be in the</td>
+                            <td class="source"> *   Then user can not be login until account been verified. An event chain</td>
                         </tr>
                         <tr class="hit">
                             <td class="line" data-tooltip>579</td>
                             <td class="lint empty"></td>
                             <td class="hits" data-tooltip></td>
-                            <td class="source"> *   form of cron syntax or a JS Date object (see https://www.npmjs.com/package/cron).</td>
+                            <td class="source"> *   have to be triggered such that verifyAccount route is called with valid</td>
                         </tr>
                         <tr class="hit">
                             <td class="line" data-tooltip>580</td>
                             <td class="lint empty"></td>
                             <td class="hits" data-tooltip></td>
-                            <td class="source"> *   - &#x60;events&#x60; an object or array of objects with the following:</td>
+                            <td class="source"> *   token. This can be accomplished by providing a &#x60;onPostCreate&#x60; &#x60;event&#x60;</td>
                         </tr>
                         <tr class="hit">
                             <td class="line" data-tooltip>581</td>
                             <td class="lint empty"></td>
                             <td class="hits" data-tooltip></td>
-                            <td class="source"> *     - &#x60;type&#x60; the extension point event. Pre events uses the signature</td>
+                            <td class="source"> *   that for example sends an email url that that triggers the verifyAccount</td>
                         </tr>
                         <tr class="hit">
                             <td class="line" data-tooltip>582</td>
                             <td class="lint empty"></td>
                             <td class="hits" data-tooltip></td>
-                            <td class="source"> *     &#x60;function(request, reply)&#x60;and post events &#x27;function(request, next)&#x60;.</td>
+                            <td class="source"> *   route with valid token.</td>
                         </tr>
                         <tr class="hit">
                             <td class="line" data-tooltip>583</td>
                             <td class="lint empty"></td>
                             <td class="hits" data-tooltip></td>
-                            <td class="source"> *     &#x60;Request&#x60; is the sever request object. &#x60;Reply&#x60; and &#x60;next&#x60; is called</td>
+                            <td class="source"> *   - &#x60;basePath&#x60;  base path for route.</td>
                         </tr>
                         <tr class="hit">
                             <td class="line" data-tooltip>584</td>
                             <td class="lint empty"></td>
                             <td class="hits" data-tooltip></td>
-                            <td class="source"> *     to give the control back to the framework. &#x60;Reply&#x60; can be called with</td>
+                            <td class="source"> *   - &#x60;cronTime&#x60; The time to fire off your job. This can be in the</td>
                         </tr>
                         <tr class="hit">
                             <td class="line" data-tooltip>585</td>
                             <td class="lint empty"></td>
                             <td class="hits" data-tooltip></td>
-                            <td class="source"> *     a object which is assigned to request.pre with key defined in &#x60;assign&#x60;.</td>
+                            <td class="source"> *   form of cron syntax or a JS Date object (see https://www.npmjs.com/package/cron).</td>
                         </tr>
                         <tr class="hit">
                             <td class="line" data-tooltip>586</td>
                             <td class="lint empty"></td>
                             <td class="hits" data-tooltip></td>
-                            <td class="source"> *     See https://hapijs.com/api#route-handler.</td>
+                            <td class="source"> *   - &#x60;events&#x60; an object or array of objects with the following:</td>
                         </tr>
                         <tr class="hit">
                             <td class="line" data-tooltip>587</td>
                             <td class="lint empty"></td>
                             <td class="hits" data-tooltip></td>
-                            <td class="source"> *       - &#x60;onPreChangedPassword&#x60; Called before changePassword handler is triggered.</td>
+                            <td class="source"> *     - &#x60;type&#x60; the extension point event. Pre events uses the signature</td>
                         </tr>
                         <tr class="hit">
                             <td class="line" data-tooltip>588</td>
                             <td class="lint empty"></td>
                             <td class="hits" data-tooltip></td>
-                            <td class="source"> *       - &#x60;onPreCreate&#x60; Called before created handler is triggered.</td>
+                            <td class="source"> *     &#x60;function(request, reply)&#x60;and post events &#x27;function(request, next)&#x60;.</td>
                         </tr>
                         <tr class="hit">
                             <td class="line" data-tooltip>589</td>
                             <td class="lint empty"></td>
                             <td class="hits" data-tooltip></td>
-                            <td class="source"> *       - &#x60;onPreForgotPassword&#x60; Called before forgetPassword handler is triggered.</td>
+                            <td class="source"> *     &#x60;Request&#x60; is the sever request object. &#x60;Reply&#x60; and &#x60;next&#x60; is called</td>
                         </tr>
                         <tr class="hit">
                             <td class="line" data-tooltip>590</td>
                             <td class="lint empty"></td>
                             <td class="hits" data-tooltip></td>
-                            <td class="source"> *       - &#x60;onPreLogin&#x60; Called before login handler is triggered.</td>
+                            <td class="source"> *     to give the control back to the framework. &#x60;Reply&#x60; can be called with</td>
                         </tr>
                         <tr class="hit">
                             <td class="line" data-tooltip>591</td>
                             <td class="lint empty"></td>
                             <td class="hits" data-tooltip></td>
-                            <td class="source"> *       - &#x60;onPreLogout&#x60; Called before logout handler is triggered.</td>
+                            <td class="source"> *     a object which is assigned to request.pre with key defined in &#x60;assign&#x60;.</td>
                         </tr>
                         <tr class="hit">
                             <td class="line" data-tooltip>592</td>
                             <td class="lint empty"></td>
                             <td class="hits" data-tooltip></td>
-                            <td class="source"> *       - &#x60;onPreResetPassword&#x60; Called before resetPassword handler is triggered.</td>
+                            <td class="source"> *     See https://hapijs.com/api#route-handler.</td>
                         </tr>
                         <tr class="hit">
                             <td class="line" data-tooltip>593</td>
                             <td class="lint empty"></td>
                             <td class="hits" data-tooltip></td>
-                            <td class="source"> *       - &#x60;onPreVerifyAccount&#x60; Called before verifyAccount handler is triggered.</td>
+                            <td class="source"> *       - &#x60;onPreChangedPassword&#x60; Called before changePassword handler is triggered.</td>
                         </tr>
                         <tr class="hit">
                             <td class="line" data-tooltip>594</td>
                             <td class="lint empty"></td>
                             <td class="hits" data-tooltip></td>
-                            <td class="source"> *       - &#x60;onPostChangePassword&#x60; Called after &#x60;changePassword&#x60; route has been</td>
+                            <td class="source"> *       - &#x60;onPreCreate&#x60; Called before created handler is triggered.</td>
                         </tr>
                         <tr class="hit">
                             <td class="line" data-tooltip>595</td>
                             <td class="lint empty"></td>
                             <td class="hits" data-tooltip></td>
-                            <td class="source"> *       triggered with &#x60;account&#x60; and &#x60;token&#x60; objects are available in</td>
+                            <td class="source"> *       - &#x60;onPreForgotPassword&#x60; Called before forgetPassword handler is triggered.</td>
                         </tr>
                         <tr class="hit">
                             <td class="line" data-tooltip>596</td>
                             <td class="lint empty"></td>
                             <td class="hits" data-tooltip></td>
-                            <td class="source"> *       &#x27;request.plugins[&#x27;hapi-account&#x27;].result&#x27;.</td>
+                            <td class="source"> *       - &#x60;onPreLogin&#x60; Called before login handler is triggered.</td>
                         </tr>
                         <tr class="hit">
                             <td class="line" data-tooltip>597</td>
                             <td class="lint empty"></td>
                             <td class="hits" data-tooltip></td>
-                            <td class="source"> *       - &#x60;onPostCreate&#x60; Called after an account is created with</td>
+                            <td class="source"> *       - &#x60;onPreLogout&#x60; Called before logout handler is triggered.</td>
                         </tr>
                         <tr class="hit">
                             <td class="line" data-tooltip>598</td>
                             <td class="lint empty"></td>
                             <td class="hits" data-tooltip></td>
-                            <td class="source"> *       &#x60;account&#x60; and &#x60;token&#x60; (token is onlye created whith &#x60;option.verifyAccount&#x3D;true&#x60;)</td>
+                            <td class="source"> *       - &#x60;onPreResetPassword&#x60; Called before resetPassword handler is triggered.</td>
                         </tr>
                         <tr class="hit">
                             <td class="line" data-tooltip>599</td>
                             <td class="lint empty"></td>
                             <td class="hits" data-tooltip></td>
-                            <td class="source"> *       objects are available in &#x27;request.plugins[&#x27;hapi-account&#x27;].result&#x27;.</td>
+                            <td class="source"> *       - &#x60;onPreVerifyAccount&#x60; Called before verifyAccount handler is triggered.</td>
                         </tr>
                         <tr class="hit">
                             <td class="line" data-tooltip>600</td>
                             <td class="lint empty"></td>
                             <td class="hits" data-tooltip></td>
-                            <td class="source"> *       - &#x60;onPostForgotPassword&#x60; Called after forgot password route has been</td>
+                            <td class="source"> *       - &#x60;onPostChangePassword&#x60; Called after &#x60;changePassword&#x60; route has been</td>
                         </tr>
                         <tr class="hit">
                             <td class="line" data-tooltip>601</td>
                             <td class="lint empty"></td>
                             <td class="hits" data-tooltip></td>
-                            <td class="source"> *       triggered  &#x60;account&#x60; and &#x60;token&#x60; objects are available in &#x27;request.plugins[&#x27;hapi-account&#x27;].result&#x27;.</td>
+                            <td class="source"> *       triggered with &#x60;account&#x60; and &#x60;token&#x60; objects are available in</td>
                         </tr>
                         <tr class="hit">
                             <td class="line" data-tooltip>602</td>
                             <td class="lint empty"></td>
                             <td class="hits" data-tooltip></td>
-                            <td class="source"> *       Have to provide a way for the user to trigger &#x60;resetPassword&#x60; route in</td>
+                            <td class="source"> *       &#x27;request.plugins[&#x27;hapi-account&#x27;].result&#x27;.</td>
                         </tr>
                         <tr class="hit">
                             <td class="line" data-tooltip>603</td>
                             <td class="lint empty"></td>
                             <td class="hits" data-tooltip></td>
-                            <td class="source"> *       order to reset a password.</td>
+                            <td class="source"> *       - &#x60;onPostCreate&#x60; Called after an account is created with</td>
                         </tr>
                         <tr class="hit">
                             <td class="line" data-tooltip>604</td>
                             <td class="lint empty"></td>
                             <td class="hits" data-tooltip></td>
-                            <td class="source"> *       - &#x60;onPostLogin&#x60; Called after login with &#x60;account&#x60; and &#x60;token&#x60; objects are available in</td>
+                            <td class="source"> *       &#x60;account&#x60; and &#x60;token&#x60; (token is onlye created whith &#x60;options.accountVerified&#x3D;true&#x60;)</td>
                         </tr>
                         <tr class="hit">
                             <td class="line" data-tooltip>605</td>
                             <td class="lint empty"></td>
                             <td class="hits" data-tooltip></td>
-                            <td class="source"> *       &#x27;request.plugins[&#x27;hapi-account&#x27;].result&#x27;.</td>
+                            <td class="source"> *       objects are available in &#x27;request.plugins[&#x27;hapi-account&#x27;].result&#x27;.</td>
                         </tr>
                         <tr class="hit">
                             <td class="line" data-tooltip>606</td>
                             <td class="lint empty"></td>
                             <td class="hits" data-tooltip></td>
-                            <td class="source"> *       - &#x60;onPostLogout&#x60; Called after logout</td>
+                            <td class="source"> *       - &#x60;onPostForgotPassword&#x60; Called after forgot password route has been</td>
                         </tr>
                         <tr class="hit">
                             <td class="line" data-tooltip>607</td>
                             <td class="lint empty"></td>
                             <td class="hits" data-tooltip></td>
-                            <td class="source"> *       - &#x60;onPostResetPassword&#x60; Called after &#x60;resetPassword&#x60; route has been</td>
+                            <td class="source"> *       triggered  &#x60;account&#x60; and &#x60;token&#x60; objects are available in &#x27;request.plugins[&#x27;hapi-account&#x27;].result&#x27;.</td>
                         </tr>
                         <tr class="hit">
                             <td class="line" data-tooltip>608</td>
                             <td class="lint empty"></td>
                             <td class="hits" data-tooltip></td>
-                            <td class="source"> *       triggered with &#x60;account&#x60; and &#x60;token&#x60; objects are available in</td>
+                            <td class="source"> *       Have to provide a way for the user to trigger &#x60;resetPassword&#x60; route in</td>
                         </tr>
                         <tr class="hit">
                             <td class="line" data-tooltip>609</td>
                             <td class="lint empty"></td>
                             <td class="hits" data-tooltip></td>
-                            <td class="source"> *       &#x27;request.plugins[&#x27;hapi-account&#x27;].result&#x27;.</td>
+                            <td class="source"> *       order to reset a password.</td>
                         </tr>
                         <tr class="hit">
                             <td class="line" data-tooltip>610</td>
                             <td class="lint empty"></td>
                             <td class="hits" data-tooltip></td>
-                            <td class="source"> *       - &#x60;onPostVerifyAccount&#x60; Called after &#x60;verifyAccount&#x60; route has been</td>
+                            <td class="source"> *       - &#x60;onPostLogin&#x60; Called after login with &#x60;account&#x60; and &#x60;token&#x60; objects are available in</td>
                         </tr>
                         <tr class="hit">
                             <td class="line" data-tooltip>611</td>
                             <td class="lint empty"></td>
                             <td class="hits" data-tooltip></td>
-                            <td class="source"> *       triggered with &#x60;account&#x60; and &#x60;token&#x60; objects are available in</td>
+                            <td class="source"> *       &#x27;request.plugins[&#x27;hapi-account&#x27;].result&#x27;.</td>
                         </tr>
                         <tr class="hit">
                             <td class="line" data-tooltip>612</td>
                             <td class="lint empty"></td>
                             <td class="hits" data-tooltip></td>
-                            <td class="source"> *       &#x27;request.plugins[&#x27;hapi-account&#x27;].result&#x27;.</td>
+                            <td class="source"> *       - &#x60;onPostLogout&#x60; Called after logout</td>
                         </tr>
                         <tr class="hit">
                             <td class="line" data-tooltip>613</td>
                             <td class="lint empty"></td>
                             <td class="hits" data-tooltip></td>
-                            <td class="source"> *   - &#x60;expire&#x60; Object where the duration (in seconds) in tokens created in different</td>
+                            <td class="source"> *       - &#x60;onPostResetPassword&#x60; Called after &#x60;resetPassword&#x60; route has been</td>
                         </tr>
                         <tr class="hit">
                             <td class="line" data-tooltip>614</td>
                             <td class="lint empty"></td>
                             <td class="hits" data-tooltip></td>
-                            <td class="source"> *       routes are valid.</td>
+                            <td class="source"> *       triggered with &#x60;account&#x60; and &#x60;token&#x60; objects are available in</td>
                         </tr>
                         <tr class="hit">
                             <td class="line" data-tooltip>615</td>
                             <td class="lint empty"></td>
                             <td class="hits" data-tooltip></td>
-                            <td class="source"> *     - &#x60;create&#x60; Duration (in seconds) the  token created in &#x60;create&#x60; route is valid</td>
+                            <td class="source"> *       &#x27;request.plugins[&#x27;hapi-account&#x27;].result&#x27;.</td>
                         </tr>
                         <tr class="hit">
                             <td class="line" data-tooltip>616</td>
                             <td class="lint empty"></td>
                             <td class="hits" data-tooltip></td>
-                            <td class="source"> *     - &#x60;login&#x60; Duration (in seconds) the  token created in &#x60;login&#x60; route is valid</td>
+                            <td class="source"> *       - &#x60;onPostVerifyAccount&#x60; Called after &#x60;verifyAccount&#x60; route has been</td>
                         </tr>
                         <tr class="hit">
                             <td class="line" data-tooltip>617</td>
                             <td class="lint empty"></td>
                             <td class="hits" data-tooltip></td>
-                            <td class="source"> *     - &#x60;forgotPassword&#x60; Duration (in seconds) the  token created in &#x60;forgotPassword&#x60;</td>
+                            <td class="source"> *       triggered with &#x60;account&#x60; and &#x60;token&#x60; objects are available in</td>
                         </tr>
                         <tr class="hit">
                             <td class="line" data-tooltip>618</td>
                             <td class="lint empty"></td>
                             <td class="hits" data-tooltip></td>
-                            <td class="source"> *     route is valid</td>
+                            <td class="source"> *       &#x27;request.plugins[&#x27;hapi-account&#x27;].result&#x27;.</td>
                         </tr>
                         <tr class="hit">
                             <td class="line" data-tooltip>619</td>
                             <td class="lint empty"></td>
                             <td class="hits" data-tooltip></td>
-                            <td class="source"> *   - &#x60;verifyAccount&#x60; If true then verified property in account is set to false.</td>
+                            <td class="source"> *   - &#x60;expire&#x60; Object where the duration (in seconds) in tokens created in different</td>
                         </tr>
                         <tr class="hit">
                             <td class="line" data-tooltip>620</td>
                             <td class="lint empty"></td>
                             <td class="hits" data-tooltip></td>
-                            <td class="source"> *   Then user can not be login until account been verified. An event chain</td>
+                            <td class="source"> *       routes are valid.</td>
                         </tr>
                         <tr class="hit">
                             <td class="line" data-tooltip>621</td>
                             <td class="lint empty"></td>
                             <td class="hits" data-tooltip></td>
-                            <td class="source"> *   have to be triggered such that verifyAccount route is called with valid</td>
+                            <td class="source"> *     - &#x60;create&#x60; Duration (in seconds) the  token created in &#x60;create&#x60; route is valid</td>
                         </tr>
                         <tr class="hit">
                             <td class="line" data-tooltip>622</td>
                             <td class="lint empty"></td>
                             <td class="hits" data-tooltip></td>
-                            <td class="source"> *   token. This can be accomplished by providing a &#x60;onPostCreate&#x60; &#x60;event&#x60;</td>
+                            <td class="source"> *     - &#x60;login&#x60; Duration (in seconds) the  token created in &#x60;login&#x60; route is valid</td>
                         </tr>
                         <tr class="hit">
                             <td class="line" data-tooltip>623</td>
                             <td class="lint empty"></td>
                             <td class="hits" data-tooltip></td>
-                            <td class="source"> *   that for example sends an email url that that triggers the verifyAccount</td>
+                            <td class="source"> *     - &#x60;forgotPassword&#x60; Duration (in seconds) the  token created in &#x60;forgotPassword&#x60;</td>
                         </tr>
                         <tr class="hit">
                             <td class="line" data-tooltip>624</td>
                             <td class="lint empty"></td>
                             <td class="hits" data-tooltip></td>
-                            <td class="source"> *   route with valid token.</td>
+                            <td class="source"> *     route is valid</td>
                         </tr>
                         <tr class="hit">
                             <td class="line" data-tooltip>625</td>
@@ -5397,7 +5397,7 @@
                             <td class="line" data-tooltip>690</td>
                             <td class="lint empty"></td>
                             <td class="hits" data-tooltip>5</td>
-                            <td class="source">                debug( &#x27;strategy validateFunc request.auth.credentials&#x27;, request.auth.credentials )</td>
+                            <td class="source">                debug( &#x27;strategy validateFunc request.auth.credentials&#x27;, request.auth.credentials );</td>
                         </tr>
                         <tr class="hit">
                             <td class="line" data-tooltip>691</td>

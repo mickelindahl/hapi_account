@@ -1,15 +1,10 @@
 {
-  "name": "hapi-account",
+  "name": "example-server",
   "version": "1.0.0",
-  "description": "Users management",
+  "description": "Example server using hapi-account",
   "main": "index.js",
   "scripts": {
     "test": "lab.cmd",
-    "test-cov-html": "./node_modules/.bin/lab -m 10000 -l -r html -o coverage.html  test/index.js"
-  },
-  "repository": {
-    "type": "git",
-    "url": "git+ssh://git@github.com/mickelindahl/hapi_account.git"
   },
   "keywords": [
     "user",
@@ -20,9 +15,9 @@
   "author": "Mikael Lindahl",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/mickelindahl/hapi_account/issues"
+    "url": "https://github.com/mickelindahl/grassy_user/issues"
   },
-  "homepage": "https://github.com/mickelindahl/hapi_account#readme",
+  "homepage": "https://github.com/mickelindahl/grassy_user#readme",
   "devDependencies": {
     "bluebird": "^3.4.6",
     "code": "^4.0.0",
