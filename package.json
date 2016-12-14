@@ -2,7 +2,7 @@
   "name": "hapi-account",
   "version": "1.0.0",
   "description": "Users management",
-  "main": "index.js",
+  "main": "lib/index.js",
   "scripts": {
     "test": "lab.cmd",
     "test-cov-html": "./node_modules/.bin/lab -m 10000 -l -r html -o coverage.html  test/index.js"

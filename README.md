@@ -1,8 +1,7 @@
 Hapi account
 =============
 
-
-A library for with a REST api for accounts. 
+A REST api for accounts with Bearer token authentication.
 
 ## Installation
 
