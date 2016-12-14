@@ -1,7 +1,8 @@
 Hapi account
 =============
 
-A REST api for accounts with Bearer token authentication.
+A REST api for accounts with Bearer token authentication built for [hapi](https://hapijs.com) server with 
+ [hapi-waterline](https://github.com/Pencroff/hapi-waterline) plugin for database api. 
 
 ## Installation
 

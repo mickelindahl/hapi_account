@@ -1,0 +1,26 @@
+{
+  "name": "example-server",
+  "version": "1.0.0",
+  "description": "Example server using hapi-account",
+  "main": "index.js",
+  "scripts": {
+    "test": "lab.cmd"
+  },
+  "keywords": [
+    "user",
+    "account",
+    "verification"
+  ],
+  "author": "Mikael Lindahl",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/mickelindahl/grassy_user/issues"
+  },
+  "homepage": "https://github.com/mickelindahl/grassy_user#readme",
+  "dependencies": {
+    "hapi": "^15.2.0",
+    "hapi-account": "git+ssh://git@github.com/mickelindahl/hapi_account.git",
+    "hapi-waterline": "^0.1.2",
+    "sails-memory": "^0.10.7"
+  }
+}

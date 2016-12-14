@@ -18,9 +18,7 @@ let options_hw = {
     adapters: { // adapters declaration
         'memory': require( 'sails-memory' )
     },
-    connections: {
-        'default': db_connection
-    },
+    connections: {default: {adapter: 'memory' }},
     models: { // common models parameters, not override exist declaration inside models
         connection: 'default',
         migrate: 'create',

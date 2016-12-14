@@ -1,5 +1,5 @@
 /**
- * Created by Mikael Lindahl (S057WL) on 2016-12-08.
+ * Created by Mikael Lindahl on 2016-12-08.
  */
 
 'use strict';
