@@ -11,12 +11,6 @@ const path = require( 'path' );
 const start_server = require( '../test_server.js' );
 
 let lab = exports.lab = Lab.script();
-// let _email = 'peace@dauwg.com';
-// let _email_invite = 'peace@dauwg2.com';
-// let _code = 'monkey';
-
-
-// the order of tests matters
 
 let options_create = {
     method: "POST",
@@ -24,7 +18,7 @@ let options_create = {
     payload: {
         email: 'me@help.se',
         password: 'secret',
-        scope:['admin']
+        scope: ['admin']
     },
     credentials: {} // To bypass auth strategy
 };
@@ -45,10 +39,46 @@ let options_logout = {
     payload: {
         token: null,
     },
-    headers:{Authorization:null}
+    headers: { Authorization: null }
     // credentials: {} // To bypass auth strategy
 };
 
+let options_forgotPassword = {
+    method: "POST",
+    url: "/forgotPassword",
+    payload: {
+        email: 'me@help.se',
+    },
+};
+
+let options_changePassword = {
+    method: "POST",
+    url: "/changePassword",
+    payload: {
+        password: 'new secret',
+    },
+    headers: { Authorization: null }
+};
+
+let options_verifyAccount = {
+    method: "POST",
+    url: "/verifyAccount",
+    payload: {
+        token: null,
+    },
+};
+
+let options_resetPassword = {
+    method: "POST",
+    url: "/resetPassword",
+    payload: {
+        password: "new secret",
+        token: null,
+    },
+};
+
+
+// The order of tests matters!!!
 lab.experiment( "Account", ()=> {
 
     lab.test( 'Testing create with verifyAccount true and logout',
@@ -69,7 +99,6 @@ lab.experiment( "Account", ()=> {
 
                             code.expect( response.statusCode ).to.equal( 200 );
                             code.expect( response.result ).to.be.equal('Logged out');
-                            debug(result.adapter);
 
                             new Promise(resolve=>{
                                 result.adapter.teardown(resolve); // fails otherwise
@@ -98,7 +127,6 @@ lab.experiment( "Account", ()=> {
 
                         code.expect( response.statusCode ).to.equal( 400 );
                         code.expect( response.result.message ).to.equal( 'Account not verified');
-                        debug(result.adapter);
 
                         new Promise(resolve=>{
                             result.adapter.teardown(resolve); // fails otherwise
@@ -134,13 +162,16 @@ lab.experiment( "Account", ()=> {
             } )
         } );
 
-    lab.test( 'Testing login throw error',
+    lab.test( 'Testing login throw error and with expire in options',
         ( done ) => {
 
             let events=[
                 {type:'onPostLogin', method:(request, next)=>{throw 'onPostLogin error'}}];
 
-             start_server( { keyId:'email', verifyAccount:true, events:events} ).then( result => {
+            let options={ keyId:'email', verifyAccount:false,
+                events:events, expire:{login:'1 * * * *'}}
+
+            start_server( options).then( result => {
 
                 result.server.inject( options_create, response => {
                     result.server.inject( options_login, response => {
@@ -171,7 +202,6 @@ lab.experiment( "Account", ()=> {
 
                         code.expect( response.statusCode ).to.equal( 404 );
                         code.expect( response.result.message ).to.equal( 'Account not found');
-                        debug(result.adapter);
 
                         new Promise(resolve=>{
                             result.adapter.teardown(resolve); // fails otherwise
@@ -183,22 +213,20 @@ lab.experiment( "Account", ()=> {
             } )
         } );
 
-    lab.test( 'Testing login token already exist',
+    lab.test( 'Testing login',
         ( done ) => {
 
-            start_server( { keyId:'email', verifyAccount:true} ).then( result => {
+            start_server( { keyId:'email', verifyAccount:false} ).then( result => {
 
                 result.server.inject( options_create, response => {
 
                     options_login.payload.email='me@help.se';
-                    // options_logout.headers.Authorization='Bearer '+response.result.token;
 
                     result.server.inject( options_login, response => {
                         result.server.inject( options_login, response => {
 
                             code.expect( response.statusCode ).to.equal( 200 );
                             code.expect( response.result.token ).to.be.a.string();
-                            debug(result.adapter);
 
                             new Promise(resolve=>{
                                 result.adapter.teardown(resolve); // fails otherwise
@@ -224,7 +252,33 @@ lab.experiment( "Account", ()=> {
 
                         code.expect( response.statusCode ).to.equal( 403 );
                         code.expect( response.result.message ).to.equal( 'Wrong password');
-                        debug(result.adapter);
+
+                        new Promise(resolve=>{
+                            result.adapter.teardown(resolve); // fails otherwise
+                        }).then(()=>{
+
+                            // Change back to correct password
+                            options_login.payload.password='secret';
+
+                            result.server.stop({timeout:200}, done);
+
+                        });
+                    } );
+                })
+            } )
+        } );
+
+    lab.test( 'Testing forgot password',
+        ( done ) => {
+
+            start_server( { keyId:'email', verifyAccount:true} ).then( result => {
+
+                result.server.inject( options_create, response => {
+
+                    result.server.inject( options_forgotPassword, response => {
+
+                        code.expect( response.statusCode ).to.equal( 200 );
+                        code.expect( response.result ).to.equal( 'Forgot token created');
 
                         new Promise(resolve=>{
                             result.adapter.teardown(resolve); // fails otherwise
@@ -236,395 +290,279 @@ lab.experiment( "Account", ()=> {
             } )
         } );
 
+    lab.test( 'Testing forgot password throw error',
+        ( done ) => {
 
+            let events=[
+                {type:'onPostForgotPassword',
+                    method:(request, next)=>{throw 'onPostForgotPassword error'}}];
 
-    //
-    // lab.test( 'Testing resend verification email already verified',
-    //     ( done ) => {
-    //
-    //         let Account = _server.getModel( 'account' );
-    //         Account.update( { email: _email }, { verified: true } ).exec( ( err, models )=> {
-    //
-    //             let options = {
-    //                 method: "POST",
-    //                 url: "/account/resendVerificationEmail",
-    //                 payload: {
-    //                     email: _email,
-    //                     password: 'secret'
-    //                 }
-    //             };
-    //
-    //             _server.inject( options, ( response )=> {
-    //
-    //                 code.expect( response.statusCode ).to.equal( 400 );
-    //                 code.expect( JSON.parse( response.payload ).message ).to.equal( 'Already verified' );
-    //                 done();
-    //
-    //             } );
-    //         } )
-    //     } );
-    //
-    // lab.test( 'Testing resend verification email already verified',
-    //     ( done ) => {
-    //
-    //         let Account = _server.getModel( 'account' );
-    //         Account.update( { email: _email }, { verified: true } ).exec( ( err, models )=> {
-    //
-    //             let options = {
-    //                 method: "POST",
-    //                 url: "/account/resendVerificationEmail",
-    //                 payload: {
-    //                     email: 'wrong@hej',
-    //                     password: 'secret'
-    //                 }
-    //             };
-    //
-    //             _server.inject( options, ( response )=> {
-    //
-    //                 code.expect( response.statusCode ).to.equal( 404 );
-    //                 code.expect( JSON.parse( response.payload ).message ).to.equal( 'Account not found' );
-    //                 done();
-    //
-    //             } );
-    //         } )
-    //     } );
-    //
-    // lab.test( 'Testing create account with invite',
-    //     ( done ) => {
-    //         let options = {
-    //             method: "POST",
-    //             url: "/account/invite",
-    //             payload: {
-    //                 email: _email_invite,
-    //                 password: 'secret',
-    //                 code: _code
-    //             }
-    //         };
-    //
-    //         _server.inject( options, ( response )=> {
-    //
-    //             code.expect( response.statusCode ).to.equal( 201 );
-    //             code.expect( response.result.verified ).to.be.false();
-    //             code.expect( response.result.email ).to.equal( options.payload.email );
-    //             code.expect( response.result.password ).not.to.equal( options.payload.password ); // return hashed password
-    //             done();
-    //
-    //         } );
-    //     } );
-    //
-    // lab.test( 'Testing create account with invite invalid',
-    //     ( done ) => {
-    //         let options = {
-    //             method: "POST",
-    //             url: "/account/invite",
-    //             payload: {
-    //                 email: _email_invite + 'm',
-    //                 password: 'secret',
-    //                 code: 'invalid'
-    //             }
-    //         };
-    //
-    //         _server.inject( options, ( response )=> {
-    //
-    //             code.expect( response.statusCode ).to.equal( 400 );
-    //             code.expect( JSON.parse( response.payload ).message ).to.equal( 'Invite not valid' );
-    //             done();
-    //
-    //         } );
-    //     } );
-    //
-    // lab.test( 'Testing verify email valid',
-    //     ( done ) => {
-    //
-    //         let Token = _server.getModel( 'token' )
-    //         Token.find( { email: _email } ).exec( ( err, models )=> {
-    //             let options = {
-    //                 method: "GET",
-    //                 url: "/account/verifyEmail/" + models[0].uuid//+Jwt.sign( { email: _email }, 'secret'),
-    //             };
-    //
-    //             _server.inject( options, ( response )=> {
-    //
-    //                 code.expect( response.statusCode ).to.equal( 200 );
-    //                 done();
-    //
-    //             } );
-    //         } )
-    //     } );
-    //
-    // lab.test( 'Testing verify email invalid',
-    //     ( done ) => {
-    //
-    //         let Token = _server.getModel( 'token' )
-    //         Token.find( { email: _email } ).exec( ( err, models )=> {
-    //             let options = {
-    //                 method: "GET",
-    //                 url: "/account/verifyEmail/invalid"
-    //             };
-    //
-    //             _server.inject( options, ( response )=> {
-    //
-    //                 code.expect( response.statusCode ).to.equal( 404 ); //basImplementation
-    //                 done();
-    //
-    //             } );
-    //         } )
-    //     } );
-    //
-    // lab.test( 'Testing login success',
-    //     ( done ) => {
-    //         let options = {
-    //             method: "POST",
-    //             url: "/account/login",
-    //             payload: {
-    //                 email: _email,
-    //                 password: 'secret',
-    //             }
-    //         };
-    //
-    //         _server.inject( options, ( response )=> {
-    //
-    //             code.expect( response.statusCode ).to.equal( 200 );
-    //             code.expect( response.result.token ).to.be.a.string();
-    //             done();
-    //
-    //         } );
-    //     } );
-    //
-    // lab.test( 'Testing login wrong password',
-    //     ( done ) => {
-    //         let options = {
-    //             method: "POST",
-    //             url: "/account/login",
-    //             payload: {
-    //                 email: _email,
-    //                 password: 'wrong secret',
-    //             }
-    //         };
-    //
-    //         _server.inject( options, ( response )=> {
-    //
-    //             code.expect( response.statusCode ).to.equal( 403 );
-    //             code.expect( JSON.parse( response.payload ).message ).to.equal( 'Wrong password' );
-    //             done();
-    //
-    //         } );
-    //     } );
-    //
-    // lab.test( 'Testing login wrong email',
-    //     ( done ) => {
-    //         let options = {
-    //             method: "POST",
-    //             url: "/account/login",
-    //             payload: {
-    //                 email: _email + 'wrong',
-    //                 password: 'secret',
-    //             }
-    //         };
-    //
-    //         _server.inject( options, ( response )=> {
-    //
-    //             code.expect( response.statusCode ).to.equal( 404 );
-    //             code.expect( JSON.parse( response.payload ).message ).to.equal( 'Account not found' );
-    //             done();
-    //
-    //         } );
-    //     } );
-    //
-    // lab.test( 'Testing login backend success',
-    //     ( done ) => {
-    //         let options = {
-    //             method: "POST",
-    //             url: "/account/loginBackend",
-    //             payload: {
-    //                 email: _email,
-    //                 password: 'secret',
-    //             }
-    //         };
-    //
-    //         _server.inject( options, ( response )=> {
-    //
-    //             code.expect( response.statusCode ).to.equal( 201 );
-    //             code.expect( response.result.id_token ).to.be.a.string();
-    //             done();
-    //
-    //         } );
-    //     } );
-    //
-    // lab.test( 'Testing login backend wrong password',
-    //     ( done ) => {
-    //         let options = {
-    //             method: "POST",
-    //             url: "/account/loginBackend",
-    //             payload: {
-    //                 email: _email,
-    //                 password: 'wrong secret',
-    //             }
-    //         };
-    //
-    //         _server.inject( options, ( response )=> {
-    //
-    //             code.expect( response.statusCode ).to.equal( 403 );
-    //             code.expect( JSON.parse( response.payload ).message ).to.equal( 'Wrong password' );
-    //             done();
-    //
-    //         } );
-    //     } );
-    //
-    // lab.test( 'Testing login backend wrong email',
-    //     ( done ) => {
-    //         let options = {
-    //             method: "POST",
-    //             url: "/account/loginBackend",
-    //             payload: {
-    //                 email: 'wrong@wrong',
-    //                 password: 'secret',
-    //             }
-    //         };
-    //
-    //         _server.inject( options, ( response )=> {
-    //
-    //             code.expect( response.statusCode ).to.equal( 404 );
-    //             code.expect( JSON.parse( response.payload ).message ).to.equal( 'Account not found' );
-    //             done();
-    //
-    //         } );
-    //     } );
-    //
-    // lab.test( 'Testing reset password',
-    //     ( done ) => {
-    //
-    //         let Account = _server.getModel( 'account' );
-    //         Account.find( { email: _email } ).exec( ( err, models )=> {
-    //
-    //             let options = {
-    //                 method: "GET",
-    //                 url: "/account/resetPassword/123456",
-    //             };
-    //
-    //             _server.inject( options, ( response )=> {
-    //
-    //                 code.expect( response.statusCode ).to.equal( 200 );
-    //                 code.expect( response.payload ).to.be.a.string();
-    //                 done();
-    //
-    //             } );
-    //         } )
-    //     } );
-    //
-    // lab.test( 'Testing forgot password',
-    //     ( done ) => {
-    //
-    //         let options = {
-    //             method: "POST",
-    //             url: "/account/forgotPassword",
-    //             payload: {
-    //                 email: _email
-    //             }
-    //         };
-    //
-    //         _server.inject( options, ( response )=> {
-    //
-    //             code.expect( response.statusCode ).to.equal( 200 );
-    //             code.expect( response.payload ).to.be.a.string();
-    //             done();
-    //
-    //         } );
-    //     } );
-    //
-    // lab.test( 'Testing forgot password wrong email',
-    //     ( done ) => {
-    //
-    //         let options = {
-    //             method: "POST",
-    //             url: "/account/forgotPassword",
-    //             payload: {
-    //                 email: 'wrong@hej.com'
-    //             }
-    //         };
-    //
-    //         _server.inject( options, ( response )=> {
-    //
-    //             code.expect( response.statusCode ).to.equal( 404 );
-    //             code.expect( JSON.parse( response.payload ).message ).to.equal( 'Account not found' );
-    //             done();
-    //
-    //         } );
-    //     } );
-    //
-    // lab.test( 'Testing account created',
-    //     ( done ) => {
-    //
-    //         let options = {
-    //             method: "GET",
-    //             url: "/account/created",
-    //         };
-    //
-    //         _server.inject( options, ( response )=> {
-    //
-    //             code.expect( response.statusCode ).to.equal( 200 );
-    //             code.expect( response.payload ).to.be.a.string();
-    //             done();
-    //
-    //         } );
-    //     } );
-    //
-    // lab.test( 'Testing change password',
-    //     ( done ) => {
-    //
-    //         let Token = _server.getModel( 'token' );
-    //         Token.find( { email: _email } ).exec( ( err, models )=> {
-    //             let options = {
-    //                 method: "POST",
-    //                 url: "/account/changePassword",
-    //                 payload: {
-    //                     password: 'new secret',
-    //                     token: models[0].uuid
-    //                 }
-    //             };
-    //
-    //             _server.inject( options, ( response )=> {
-    //
-    //                 code.expect( response.statusCode ).to.equal( 200 );
-    //                 code.expect( response.payload ).to.equal( 'password updated' );
-    //                 done();
-    //
-    //             } );
-    //         } )
-    //     } );
-    //
-    // lab.test( 'Testing change password wrong token',
-    //     ( done ) => {
-    //
-    //         let Token = _server.getModel( 'token' )
-    //         Token.find( { email: _email } ).exec( ( err, models )=> {
-    //             let options = {
-    //                 method: "POST",
-    //                 url: "/account/changePassword",
-    //                 payload: {
-    //                     password: 'new secret',
-    //                     token: 'wrong'
-    //                 }
-    //             };
-    //
-    //             _server.inject( options, ( response )=> {
-    //
-    //                 code.expect( response.statusCode ).to.equal( 400 );
-    //                 code.expect( JSON.parse( response.payload ).message ).to.equal( 'Invalid token' );
-    //                 done();
-    //
-    //             } );
-    //         } )
-    //     } );
-    //
-    // lab.after( {}, ( done )=> {
-    //
-    //     _server.stop()
-    //
-    //     //restore mock
-    //     // _server.methods.tracking=_tmp.tracking;
-    //     // _server.methods.email=_tmp.email;
-    //
-    //     done()
-    // } )
+             let options = { keyId:'email', verifyAccount:true,
+                 events:events, expire:{forogtPassword: '0 * * * * '}}
+
+             start_server( options ).then( result => {
+
+                 result.server.inject( options_create, response => {
+
+                     result.server.inject( options_forgotPassword, response => {
+
+                         code.expect( response.statusCode ).to.equal( 500 );
+                         code.expect( response.result.error  ).to.equal('Internal Server Error');
+
+                         new Promise(resolve=>{
+                             result.adapter.teardown(resolve); // fails otherwise
+                         }).then(()=>{
+                             result.server.stop({timeout:200}, done);
+                         });
+                     } );
+                 })
+            } )
+        } );
+
+    lab.test( 'Testing change password',
+        ( done ) => {
+            start_server( { keyId: 'email', verifyAccount: true } ).then( result => {
+
+                result.server.inject( options_create, response => {
+
+                    result.server.inject( options_login, response => {
+
+                        options_changePassword.headers.Authorization = 'Bearer ' + response.result.token;
+
+                        result.server.inject( options_changePassword, response => {
+
+                            code.expect( response.statusCode ).to.equal( 200 );
+                            code.expect( response.result ).to.equal( 'Password updated' );
+
+                            new Promise( resolve=> {
+                                result.adapter.teardown( resolve ); // fails otherwise
+                            } ).then( ()=> {
+                                result.server.stop( { timeout: 200 }, done );
+                            } );
+                        } );
+                    } );
+                } )
+            } )
+        } );
+
+    lab.test( 'Testing change password trow error',
+        ( done ) => {
+            let events = [{
+                type: 'onPostChangePassword',
+                method: ( request, next )=> {
+                    throw 'onPostChangePassword error'
+                }
+            }];
+
+            start_server( { keyId: 'email', verifyAccount: true, events: events } ).then( result => {
+                result.server.inject( options_create, response => {
+                    result.server.inject( options_login, response => {
+
+                        options_changePassword.headers.Authorization = 'Bearer ' + response.result.token;
+
+                        result.server.inject( options_changePassword, response => {
+
+                            code.expect( response.statusCode ).to.equal( 500 );
+                            code.expect( response.result.error ).to.equal( 'Internal Server Error' );
+
+                            new Promise( resolve=> {
+                                result.adapter.teardown( resolve ); // fails otherwise
+                            } ).then( ()=> {
+                                result.server.stop( { timeout: 200 }, done );
+                            } );
+                        } );
+                    } );
+                } )
+            } )
+        } );
+
+    lab.test( 'Testing verify account',
+        ( done ) => {
+
+            const EventEmitter = require( 'events' );
+            let ee = new EventEmitter()
+
+            let events = [{
+                type: 'onPostCreate',
+                method: ( request, next )=> {
+
+                    setTimeout( ()=> {
+                            request.server.app.ee.emit( 'token',
+                                request.server.plugins['hapi-account'].result.token.uuid )
+                        }
+                        , 1000 )
+
+                    next()
+
+                }
+            },
+            ];
+
+            let options = { keyId: 'email', verifyAccount: false, events: events }
+
+            start_server( options ).then( result => {
+
+                result.server.app.ee = ee;
+
+                result.server.inject( options_create, response => {
+
+                    ee.on( 'token', ( token )=> {
+
+                        options_verifyAccount.payload.token = token;
+
+                        result.server.inject( options_verifyAccount, response => {
+
+                            code.expect( response.statusCode ).to.equal( 200 );
+                            code.expect( response.result ).to.equal( 'Account verified' );
+
+                            new Promise( resolve=> {
+                                result.adapter.teardown( resolve ); // fails otherwise
+                            } ).then( ()=> {
+                                result.server.stop( { timeout: 200 }, done );
+                            } );
+                        } );
+                    } )
+                } )
+            } )
+        } );
+
+    lab.test( 'Testing verify account errort',
+        ( done ) => {
+
+            const EventEmitter = require( 'events' );
+            let ee = new EventEmitter()
+
+            let events = [{
+                type: 'onPostCreate',
+                method: ( request, next )=> {
+
+                    setTimeout( ()=> {
+                            request.server.app.ee.emit( 'token',
+                                request.server.plugins['hapi-account'].result.token.uuid )
+                        }
+                        , 1000 )
+
+                    next()
+
+                }
+            }, {
+                type: 'onPostVerifyAccount',
+                method: ( request, next )=> {
+                    throw 'onPostVerifyAccount error'
+                }
+            }];
+
+            let options = { keyId: 'email', verifyAccount: false, events: events }
+
+            start_server( options ).then( result => {
+
+                result.server.app.ee = ee;
+
+                result.server.inject( options_create, response => {
+
+                    ee.on( 'token', ( token )=> {
+
+                        options_verifyAccount.payload.token = token;
+
+                        result.server.inject( options_verifyAccount, response => {
+
+                            code.expect( response.statusCode ).to.equal( 500 );
+                            code.expect( response.result.error ).to.equal( 'Internal Server Error' );
+
+                            new Promise( resolve=> {
+                                result.adapter.teardown( resolve ); // fails otherwise
+                            } ).then( ()=> {
+                                result.server.stop( { timeout: 200 }, done );
+                            } );
+                        } );
+                    } )
+                } )
+            } )
+        } );
+
+    lab.test( 'Testing reset password',
+        ( done ) => {
+
+            const EventEmitter = require( 'events' );
+            let ee = new EventEmitter()
+
+            let events = [{
+                type: 'onPostCreate',
+                method: ( request, next )=> {
+
+                    setTimeout( ()=> {
+                            request.server.app.ee.emit( 'token',
+                                request.server.plugins['hapi-account'].result.token.uuid )
+                        }
+                        , 1000 )
+
+                    next()
+
+                }
+            },
+            ];
+
+            let options = { keyId: 'email', verifyAccount: true, events: events }
+
+            start_server( options ).then( result => {
+
+                result.server.app.ee = ee;
+
+                result.server.inject( options_create, response => {
+
+                    ee.on( 'token', ( token )=> {
+
+                        options_resetPassword.payload.token = token;
+
+                        result.server.inject( options_resetPassword, response => {
+
+                            code.expect( response.statusCode ).to.equal( 200 );
+                            code.expect( response.result ).to.equal( 'Password updated' );
+
+                            new Promise( resolve=> {
+                                result.adapter.teardown( resolve ); // fails otherwise
+                            } ).then( ()=> {
+                                result.server.stop( { timeout: 200 }, done );
+                            } );
+                        } );
+                    } )
+                } )
+            } )
+        } );
+
+    lab.test( 'Testing cron job for destroying expired tokens',
+        ( done ) => {
+
+            let options = {
+                keyId: 'email',
+                verifyAccount: true,
+                expire: { create: 2 },
+                cronTime: '*/2 * * * * *'
+            };
+
+            start_server( options ).then( result => {
+
+                result.server.inject( options_create, response => {
+
+                    result.server.getModel( 'token' ).find().then( token=> {
+
+                        code.expect( token.length == 1 ).to.be.true();
+
+                        setTimeout( ()=> {
+                                result.server.getModel( 'token' ).find( token=> {
+
+                                    code.expect( token ).to.be.equal(null);
+
+                                    new Promise( resolve=> {
+                                        result.adapter.teardown( resolve ); // fails otherwise
+                                    } ).then( ()=> {
+                                        result.server.stop( { timeout: 200 }, done );
+                                    } );
+                                } )
+                            }, 3000
+                        )
+                    } )
+                } )
+            } )
+        } );
 } );
