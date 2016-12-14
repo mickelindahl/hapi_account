@@ -1,0 +1,19 @@
+thead {
+  color:white;
+}
+
+.navbar-toggler {
+  width: 2.5em;
+  height: 1.8em;
+  padding: $navbar-toggler-padding-y $navbar-toggler-padding-x;
+  font-size: $navbar-toggler-font-size;
+  line-height: 1;
+  background: transparent no-repeat center center;
+  background-size: 24px 24px;
+  border: $border-width solid transparent;
+  @include border-radius($navbar-toggler-border-radius);
+
+  @include hover-focus {
+    text-decoration: none;
+  }
+}

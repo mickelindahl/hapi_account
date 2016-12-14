@@ -5,44 +5,27 @@
 'use strict'
 
 const Hapi = require( 'hapi' );
-const hapi_waterline = require( 'hapi-waterline' );
+const routes = require( './routes/index' );
+const register = require( './config/plugins' );
 
 const server = new Hapi.Server();
 server.connection({ port: 3000 });
 
-let options_hw = {
-    adapters: { // adapters declaration
-        'memory': require( 'sails-memory' )
-    },
-    connections: {default: {adapter: 'memory' }},
-    models: { // common models parameters, not override exist declaration inside models
-        connection: 'default',
-        migrate: 'create',
-        schema: true
-    },
-    decorateServer: true, // decorate server by method - getModel
-    path: '../../../models' // string or array of strings with paths to folders with models declarations
-};
+register( server ).then( ()=> {
 
-server.register( [
-    {
-        register: hapi_waterline,
-        options: options_hw,
-    },
-    {
-    register: require( 'hapi-account' ),
-    options: {
-        accountVerified:false,
-        basePath: "account",
-        events:[
-            {type: 'onPostCreate', method:(request, next)=>{}},
-            {type: 'onPostForgotPassword', method:(request, next)=>{}}
-        ] ,
-    }}]
-);
+    // Add the routes
+    routes( server );
 
-server.start((err) => {
+    server.start( function () {
 
-    console.log(`Server running at: ${server.info.uri}`);
+        server.app.log.info( 'Server running at:', server.info.uri );
+        server.app.readyForTest = true;
 
-});
+    } );
+
+} ).catch( ( err )=> {
+
+    server.app.readyForTest = true;
+    console.error( 'Error when loading plugins',  err )
+
+} );

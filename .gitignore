@@ -5,3 +5,5 @@ node_modules
 # Ignore Idea stuff
 .idea
 
+# Ignore sqlite db in .tmp
+.tmp
