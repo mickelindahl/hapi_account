@@ -78,13 +78,25 @@ let options_resetPassword = {
 };
 
 
+
 // The order of tests matters!!!
 lab.experiment( "Account", ()=> {
 
-    lab.test( 'Testing create with verifyAccount true and logout',
+    lab.test( 'Testing create with verifyAccount true, pre event and basePath, and logout',
         ( done ) => {
 
-            start_server( { keyId:'email', verifyAccount:true} ).then( result => {
+            let events=[
+                {type:'onPreCreate', method: (request, reply)=>{ debug('attached onPre'); reply()}}
+            ];
+
+            let options = { keyId:'email', verifyAccount:true,
+                events:events, basePath:'/assume/'};
+
+            options_create.url='/assume';
+            options_login.url='/assume/login';
+            options_logout.url='/assume/logout';
+
+            start_server( options ).then( result => {
 
                 result.server.inject( options_create, response => {
 
@@ -103,6 +115,11 @@ lab.experiment( "Account", ()=> {
                             new Promise(resolve=>{
                                 result.adapter.teardown(resolve); // fails otherwise
                             }).then(()=>{
+
+                                options_create.url='/'
+                                options_login.url='/login';
+                                options_logout.url='/logout';
+
                                 result.server.stop({timeout:200}, done);
                             });
                         } );
@@ -162,13 +179,37 @@ lab.experiment( "Account", ()=> {
             } )
         } );
 
+    lab.test( 'Testing create account exist',
+        ( done ) => {
+
+            start_server( { keyId:'email', verifyAccount:true} ).then( result => {
+
+                result.server.inject( options_create, response => {
+
+                    result.server.inject( options_create, response => {
+
+                        code.expect( response.statusCode ).to.equal( 400 );
+                        code.expect( response.result.message ).to.be.equal('Account exists');
+
+                        new Promise(resolve=>{
+                            result.adapter.teardown(resolve); // fails otherwise
+                        }).then(()=>{
+                            result.server.stop({timeout:200}, done);
+                        });
+                    })
+                })
+            } )
+        } );
+
     lab.test( 'Testing login throw error and with expire in options',
         ( done ) => {
 
-            let events=[
-                {type:'onPostLogin', method:(request, next)=>{throw 'onPostLogin error'}}];
+            let events=[{
+                type:'onPostLogin',
+                method:(request, next)=>{throw 'onPostLogin error'}}
+            ];
 
-            let options={ keyId:'email', verifyAccount:false,
+            let options={ keyId:'email', verifyAccount:true,
                 events:events, expire:{login:'1 * * * *'}}
 
             start_server( options).then( result => {
@@ -216,7 +257,7 @@ lab.experiment( "Account", ()=> {
     lab.test( 'Testing login',
         ( done ) => {
 
-            start_server( { keyId:'email', verifyAccount:false} ).then( result => {
+            start_server( { keyId:'email', verifyAccount:true} ).then( result => {
 
                 result.server.inject( options_create, response => {
 
@@ -268,6 +309,78 @@ lab.experiment( "Account", ()=> {
             } )
         } );
 
+    lab.test( 'Testing logout unauthorized',
+        ( done ) => {
+
+            let events=[
+                {type:'onPostLogout',
+                    method:(request, next)=>{throw 'onPostLogout error'}}];
+
+            let options= { keyId:'email', verifyAccount:true, events:events}
+
+            start_server(options).then( result => {
+
+                result.server.inject( options_create, response => {
+
+                    code.expect( response.statusCode ).to.equal( 201 );
+                    code.expect( response.result ).to.equal('Account created');
+
+                    result.server.inject( options_login, response => {
+
+                        options_logout.headers.Authorization='Bearer invalid';
+
+                        result.server.inject( options_logout, response => {
+
+                            code.expect( response.statusCode ).to.equal( 401 );
+                            code.expect( response.result.message ).to.be.equal('Bad token');
+
+                            new Promise(resolve=>{
+                                result.adapter.teardown(resolve); // fails otherwise
+                            }).then(()=>{
+                                result.server.stop({timeout:200}, done);
+                            });
+                        } );
+                    })
+                })
+            } )
+        } );
+
+    lab.test( 'Testing logout trow error',
+        ( done ) => {
+
+            let events=[
+                {type:'onPostLogout',
+                    method:(request, next)=>{throw 'onPostLogout error'}}];
+
+            let options= { keyId:'email', verifyAccount:true, events:events}
+
+            start_server(options).then( result => {
+
+                result.server.inject( options_create, response => {
+
+                    code.expect( response.statusCode ).to.equal( 201 );
+                    code.expect( response.result ).to.equal('Account created');
+
+                    result.server.inject( options_login, response => {
+
+                        options_logout.headers.Authorization='Bearer '+response.result.token;
+
+                        result.server.inject( options_logout, response => {
+
+                            code.expect( response.statusCode ).to.equal( 500 );
+                            code.expect( response.result.error  ).to.equal('Internal Server Error');
+
+                            new Promise(resolve=>{
+                                result.adapter.teardown(resolve); // fails otherwise
+                            }).then(()=>{
+                                result.server.stop({timeout:200}, done);
+                            });
+                        } );
+                    })
+                })
+            } )
+        } );
+
     lab.test( 'Testing forgot password',
         ( done ) => {
 
@@ -290,7 +403,7 @@ lab.experiment( "Account", ()=> {
             } )
         } );
 
-    lab.test( 'Testing forgot password throw error',
+    lab.test( 'Testing forgot password throw error with expire ',
         ( done ) => {
 
             let events=[
@@ -298,7 +411,7 @@ lab.experiment( "Account", ()=> {
                     method:(request, next)=>{throw 'onPostForgotPassword error'}}];
 
              let options = { keyId:'email', verifyAccount:true,
-                 events:events, expire:{forogtPassword: '0 * * * * '}}
+                 events:events, expire:{forgotPassword: '0 * * * * '}}
 
              start_server( options ).then( result => {
 
@@ -387,7 +500,11 @@ lab.experiment( "Account", ()=> {
                 method: ( request, next )=> {
 
                     setTimeout( ()=> {
+
+                        debug( debug(request.server.plugins['hapi-account'].result))
+
                             request.server.app.ee.emit( 'token',
+
                                 request.server.plugins['hapi-account'].result.token.uuid )
                         }
                         , 1000 )
@@ -422,6 +539,35 @@ lab.experiment( "Account", ()=> {
                             } );
                         } );
                     } )
+                } )
+            } )
+        } );
+
+    lab.test( 'Testing verify account invalid token',
+        ( done ) => {
+
+            const EventEmitter = require( 'events' );
+
+            let options = { keyId: 'email', verifyAccount: false}
+
+            start_server( options ).then( result => {
+
+                result.server.inject( options_create, response => {
+
+                    options_verifyAccount.payload.token = 'not valid';
+
+                    result.server.inject( options_verifyAccount, response => {
+
+                        code.expect( response.statusCode ).to.equal( 400 );
+                        code.expect( response.result.message ).to.equal( 'Invalid token' );
+
+                        new Promise( resolve=> {
+                            result.adapter.teardown( resolve ); // fails otherwise
+                        } ).then( ()=> {
+                            result.server.stop( { timeout: 200 }, done );
+                        } );
+                    } );
+
                 } )
             } )
         } );
@@ -502,7 +648,7 @@ lab.experiment( "Account", ()=> {
             },
             ];
 
-            let options = { keyId: 'email', verifyAccount: true, events: events }
+            let options = { keyId: 'email', verifyAccount: false, events: events }
 
             start_server( options ).then( result => {
 
@@ -535,7 +681,7 @@ lab.experiment( "Account", ()=> {
 
             let options = {
                 keyId: 'email',
-                verifyAccount: true,
+                verifyAccount: false,
                 expire: { create: 2 },
                 cronTime: '*/2 * * * * *'
             };
