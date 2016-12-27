@@ -10,6 +10,7 @@ module.exports = {
 
     autoCreatedAt: false,
     autoUpdatedAt: false,
+    autoPK:false,
     attributes: {
         account_id:'integer',
         uuid: {
