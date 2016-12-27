@@ -16,7 +16,8 @@ module.exports = {
         account_id:'integer',
         uuid: {
             type:'string',
-            unique:true
+            unique:true,
+            primaryKey: true
         },
         status: 'string',
         expireAt: 'datetime',
