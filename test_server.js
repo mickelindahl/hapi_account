@@ -8,11 +8,7 @@ const account = require( "./lib/index.js" );
 const Hapi = require( 'hapi' );
 const hapi_waterline = require( 'hapi-waterline' );
 const Promise = require( 'bluebird' );
-const debug = require( 'debug' )( 'hapi_account:test_server' )
-
-let db_connection = {
-    adapter: 'memory'
-};
+const debug = require( 'debug' )( 'hapi_account:test_server' );
 
 let options_hw = {
     adapters: { // adapters declaration
@@ -45,9 +41,7 @@ function get_server( options ) {
             register: account,
             options: options
         }
-
-    ] )
-        .then( ()=> {
+    ] ).then( ()=> {
 
         server.app.readyForTest = true;
 
@@ -62,14 +56,11 @@ function start_server( options ) {
     let promise = new Promise( ( resolve, reject )=> {
         result.promise.then( ()=> {
 
-            // result.server.start( ( err )=> {
-                // debug(result.server.plugins['hapi-waterline'].orm.adapterDictionary.adapters.memory)
-                resolve({server: result.server,
+            resolve({server: result.server,
                     adapter:options_hw.adapters.memory})
 
-            // } )
         } );
-    } )
+    } );
 
     return promise
 }
