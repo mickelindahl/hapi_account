@@ -8,10 +8,12 @@ module.exports = {
 
     identity: 'token',
 
+    autoCreatedAt: false,
+    autoUpdatedAt: false,
+    autoPK:false,
+
     attributes: {
         account_id:'integer',
-        autoCreatedAt: false,
-        autoUpdatedAt: false,
         uuid: {
             type:'string',
             unique:true
