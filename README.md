@@ -8,6 +8,8 @@ Bearer token authentication using [hapi-beaer-token-atuh]() and
  * Automatic deletion of expired tokens
  * Email verification and password reset can be added with an email client (e.g. [mailgun]())  
  * Add custom pre and post calls to each route.   
+ * Bearer token can either be set in `headers.authorization.token=Bearer {uuid}`
+  or sent in a cookie `token={uuid}`.
 ## Installation
 
 `npm install --save hapi-account `
