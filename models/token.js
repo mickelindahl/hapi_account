@@ -13,7 +13,7 @@ module.exports = {
     autoPK:false,
 
     attributes: {
-        account_id:'integer',
+        accountId:'integer',
         uuid: {
             type:'string',
             unique:true,
@@ -32,7 +32,8 @@ module.exports = {
         lastUsageAt: {
             type: 'datetime',
             defaultsTo: function() {return new Date();}
-        }
+        },
+        scope:'array'
     },
 
     beforeUpdate:(values, cb)=>{
