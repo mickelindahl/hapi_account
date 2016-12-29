@@ -18,7 +18,8 @@ module.exports = {
             unique: true
         },
         password: 'string',
-        verified: 'boolean'
+        verified: 'boolean',
+        scope: 'array'
     }
 
 };
