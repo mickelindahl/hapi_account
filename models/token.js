@@ -33,7 +33,10 @@ module.exports = {
             type: 'datetime',
             defaultsTo: function() {return new Date();}
         },
-        scope:'array'
+        scope:{
+            type:'array',
+            defaultsTo:[]
+        }
     },
 
     beforeUpdate:(values, cb)=>{

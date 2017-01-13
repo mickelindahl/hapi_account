@@ -19,7 +19,10 @@ module.exports = {
         },
         password: 'string',
         verified: 'boolean',
-        scope:'array'
+        scope:{
+            type:'array',
+            defaultsTo:[]
+        }
     }
 
 };
