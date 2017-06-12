@@ -22,7 +22,8 @@ module.exports = {
         scope:{
             type:'array',
             defaultsTo:[]
-        }
+        },
+        type:'string' // local | facebook | google
     }
 
 };
