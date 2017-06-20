@@ -1,0 +1,5 @@
+# No evironment variables in repo
+.env
+
+# No bundle files
+*bundle.jsx
