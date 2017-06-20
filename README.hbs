@@ -87,7 +87,16 @@ attributes: {
 
 ## Tests
 
-  Lab.cmd
+For facebook test to pass one have to add a valid user token in `testenv` to `FACEBOOK_TMP_USER_TOKEN`. Va token can be generated from your facebook developer
+app account `https://developers.facebook.com/apps` under **roles**->**Test Users** click **edit** on a user and then **Get an access token for this user**
+
+For google test to pass get an tokenId. TODO: add way to get one. Add a test server which expose this
+
+```
+npm run test
+npm run test-facebook
+npm run test-google
+```
 
 ## Contributing
 
