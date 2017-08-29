@@ -23,7 +23,10 @@ module.exports = {
             type:'array',
             defaultsTo:[]
         },
-        type:'string', // local | facebook | google
+        type:{
+            type: 'string',
+            defaultsTo: 'local'
+        }, // local | facebook | google
         external: 'json' // External data connected with account from facebook or google
     }
 
