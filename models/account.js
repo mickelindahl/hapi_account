@@ -23,10 +23,10 @@ module.exports = {
             type:'array',
             defaultsTo:[]
         },
-        type:{
+        created_by:{
             type: 'string',
-            defaultsTo: 'local'
-        }, // local | facebook | google
+            defaultsTo: 'stakesarehigh'
+        }, // stakesarehigh | facebook | google
         response: 'json' // Response data connected with account from facebook or google
     }
 
