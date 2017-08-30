@@ -27,7 +27,7 @@ module.exports = {
             type: 'string',
             defaultsTo: 'local'
         }, // local | facebook | google
-        external: 'json' // External data connected with account from facebook or google
+        response: 'json' // Response data connected with account from facebook or google
     }
 
 };
