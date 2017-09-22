@@ -8,7 +8,7 @@ module.exports = ( server )=> {
 
     let options = {
         adapters: { // adapters declaration
-            sqlite3: require('waterline-sqlite3' )
+            sqlite3: require( 'waterline-sqlite3' )
         },
         connections: {default: {
             adapter: 'sqlite3'
@@ -19,7 +19,7 @@ module.exports = ( server )=> {
             schema: true
         },
         decorateServer: true, // decorate server by method - getModel
-        path: '../../models' // string or array of strings with paths to folders with models declarations
+        path: '../../../models' // string or array of strings with paths to folders with models declarations
     };
 
     return server.register( {

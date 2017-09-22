@@ -13,10 +13,11 @@ module.exports = {
     autoPK:false,
 
     attributes: {
-        account_id:'integer',
+        accountId:'integer',
         uuid: {
             type:'string',
-            unique:true
+            unique:true,
+            primaryKey: true
         },
         status: 'string',
         expireAt: 'datetime',
@@ -31,11 +32,15 @@ module.exports = {
         lastUsageAt: {
             type: 'datetime',
             defaultsTo: function() {return new Date();}
+        },
+        scope:{
+            type:'array',
+            defaultsTo:[]
         }
     },
 
     beforeUpdate:(values, cb)=>{
-        values.updatedAt=new Date();
+        values.updated_at=new Date();
 
         cb()
     }

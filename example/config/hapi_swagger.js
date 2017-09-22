@@ -13,7 +13,7 @@ module.exports=(server)=>{
             'title': 'Loriot API Documentation',
             'version': _packege.version
         },
-        auth: {strategy:'jwt'},
+        auth: {strategy:'simple'},
     };
 
     return server.register({

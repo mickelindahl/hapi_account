@@ -18,12 +18,17 @@
   },
   "homepage": "https://github.com/mickelindahl/grassy_user#readme",
   "dependencies": {
-    "bootstrap": "^4.0.0-alpha.5",
+    "bootstrap": "^4.0.0-beta",
+    "babel": "5.8.38",
+    "gulp": "3.9.1",
+    "gulp-babel": "5.2.0",
     "hapi": "^15.2.0",
     "hapi-account": "git+ssh://git@github.com/mickelindahl/hapi_account.git",
+    "hapi-swagger": "^7.8.1",
     "hapi-waterline": "^0.1.2",
     "jquery": "^3.1.1",
     "node-sass": "^4.0.0",
+    "popper.js": "^1.12.5",
     "waterline-sqlite3": "^1.0.3"
   }
 }

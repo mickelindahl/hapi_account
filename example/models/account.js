@@ -19,7 +19,15 @@ module.exports = {
         },
         password: 'string',
         verified: 'boolean',
-        scope: 'array'
+        scope:{
+            type:'array',
+            defaultsTo:[]
+        },
+        created_by:{
+            type: 'string',
+            defaultsTo: 'hapi-account'
+        }, // hapi-account | facebook | google
+        response: 'json' // Response data connected with account from facebook or google
     }
 
 };

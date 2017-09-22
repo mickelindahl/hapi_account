@@ -2,14 +2,18 @@
  * Created by Mikael Lindahl on 2016-12-14.
  */
 
-'use strict'
+'use strict';
 
+//import Hapi from 'hapi'
 const Hapi = require( 'hapi' );
 const routes = require( './routes/index' );
 const register = require( './config/plugins' );
 
 const server = new Hapi.Server();
-server.connection({ port: 3000 });
+server.connection({
+    host: '0.0.0.0',
+    port: 3000
+});
 
 register( server ).then( ()=> {
 
@@ -18,7 +22,7 @@ register( server ).then( ()=> {
 
     server.start( function () {
 
-        server.app.log.info( 'Server running at:', server.info.uri );
+        console.log( 'Server running at:', server.info.uri );
         server.app.readyForTest = true;
 
     } );
