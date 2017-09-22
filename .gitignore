@@ -8,5 +8,5 @@ node_modules
 # Ignore sqlite db in .tmp
 .tmp
 
-#
+# No npm
 npm-debug.log*
