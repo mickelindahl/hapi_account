@@ -10,6 +10,7 @@ Bearer token authentication using [hapi-beaer-token-atuh]() and
  * Add custom pre and post calls to each route.   
  * Bearer token can either be set in `headers.authorization.token=Bearer {uuid}`
   or sent in a cookie `token={uuid}`.
+ * Facebook and Google login. With facebook or google login a account will automatically be created for the particular email. However a password will not be created. Thus this has to be done separately. Once a email is associated with an account a person will be login to this account when authenticating themslelf either by facebook, google or native login.
 ## Installation
 
 `npm install --save hapi-account `
@@ -85,7 +86,8 @@ server.register( {
     `Request` is the sever request object. `Reply` and `next` is called
     to give the control back to the framework. `Reply` can be called with
     a object which is assigned to request.pre with key defined in `assign`
-    (See https://hapijs.com/api#route-handler).
+    (See https://hapijs.com/api#route-handler). Data available from upstreams call
+    are stored in two places, either in `request.pre` or in `request.server.plugins['hapi-account'].result`
       - `onPreChangedPassword` Called before changePassword handler is triggered.
       - `onPreCreatePost` Called before `created` handler is triggered.
       - `onPreForgotPassword` Called before `forgetPassword` handler is triggered.
@@ -138,6 +140,7 @@ Function called at cron job collecting expired tokens
 - `/create` {POST}
 - `/login` {POST}
 - `/loginFacebook` {POST}
+- `/loginGoogle` {POST}
 - `/logout` {POST}
 - `/resetPassword` {POST}
 - `/updateScope` {POST}
@@ -155,8 +158,12 @@ Function called at cron job collecting expired tokens
     * [~getDatabaseToken()](#module_pre..getDatabaseToken)
     * [~isAccount()](#module_pre..isAccount)
     * [~verifyFacebookToken()](#module_pre..verifyFacebookToken)
+    * [~verifyGoogleToken()](#module_pre..verifyGoogleToken)
     * [~verifyToken()](#module_pre..verifyToken)
     * [~verifyUser()](#module_pre..verifyUser)
+    * [~verifyOrCreateFacebookUser()](#module_pre..verifyOrCreateFacebookUser)
+    * [~verifyOrCreateGoogleUser()](#module_pre..verifyOrCreateGoogleUser)
+    * [~verifyOrCreateExternalUser()](#module_pre..verifyOrCreateExternalUser)
     * [~verifyPassword()](#module_pre..verifyPassword)
 
 <a name="module_pre..destroyToken"></a>
@@ -213,6 +220,15 @@ Verify that provided facebook token is valid
 - `reply` hapi server reply object
 
 **Kind**: inner method of [<code>pre</code>](#module_pre)  
+<a name="module_pre..verifyGoogleToken"></a>
+
+### pre~verifyGoogleToken()
+Verify that provided google token is valid
+
+- `request` hapi server request object
+- `reply` hapi server reply object
+
+**Kind**: inner method of [<code>pre</code>](#module_pre)  
 <a name="module_pre..verifyToken"></a>
 
 ### pre~verifyToken()
@@ -227,6 +243,34 @@ Verify that provided token is valid
 ### pre~verifyUser()
 Verify that user are valid
 
+- `request` hapi server request object
+- `reply` hapi server reply object
+
+**Kind**: inner method of [<code>pre</code>](#module_pre)  
+<a name="module_pre..verifyOrCreateFacebookUser"></a>
+
+### pre~verifyOrCreateFacebookUser()
+Verify that user is facebook user. Create user if missing
+
+- `request` hapi server request object
+- `reply` hapi server reply object
+
+**Kind**: inner method of [<code>pre</code>](#module_pre)  
+<a name="module_pre..verifyOrCreateGoogleUser"></a>
+
+### pre~verifyOrCreateGoogleUser()
+Verify that user is google user. Create user if missing
+
+- `request` hapi server request object
+- `reply` hapi server reply object
+
+**Kind**: inner method of [<code>pre</code>](#module_pre)  
+<a name="module_pre..verifyOrCreateExternalUser"></a>
+
+### pre~verifyOrCreateExternalUser()
+Verify that user is google user. Create user if missing
+
+- `created_by` {string} Type of auth used for creating account facebook | google
 - `request` hapi server request object
 - `reply` hapi server reply object
 
@@ -385,7 +429,16 @@ attributes: {
 
 ## Tests
 
-  Lab.cmd
+For facebook test to pass one have to add a valid user token in `testenv` to `FACEBOOK_TMP_USER_TOKEN`. Va token can be generated from your facebook developer
+app account `https://developers.facebook.com/apps` under **roles**->**Test Users** click **edit** on a user and then **Get an access token for this user**
+
+For google test to pass get an tokenId. TODO: add way to get one. Add a test server which expose this
+
+```
+npm run test
+npm run test-facebook
+npm run test-google
+```
 
 ## Contributing
 
