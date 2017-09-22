@@ -25,8 +25,8 @@ module.exports = {
         },
         created_by:{
             type: 'string',
-            defaultsTo: 'stakesarehigh'
-        }, // stakesarehigh | facebook | google
+            defaultsTo: 'hapi-account'
+        }, // hapi-account | facebook | google
         response: 'json' // Response data connected with account from facebook or google
     }
 
