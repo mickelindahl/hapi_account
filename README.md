@@ -1,3 +1,6 @@
+[![Build Status](https://travis-ci.org/mickelindahl/hapi_account.svg?branch=master)](https://travis-ci.org/mickelindahl/hapi_account)
+[![Coverage Status](https://coveralls.io/repos/github/mickelindahl/hapi_account/badge.svg?branch=2.0.1)](https://coveralls.io/github/mickelindahl/hapi_account?branch=2.0.1)
+
 Hapi account
 =============
 
@@ -9,7 +12,8 @@ Default adapter is [sails-disk](https://www.npmjs.com/package/sails-disk)
 
 ## Features
 
-* Facebook and Google login.
+* Facebook login
+* Google login
 * Bearer token auth with cookie
 * Bearer token auth with payload
 * Automatic deletion of expired tokens
@@ -157,9 +161,23 @@ Routes can be viewed using [hapi-swagger](https://www.npmjs.com/package/hapi-swa
 **Kind**: inner method of [<code>routes</code>](#module_routes)  
 ## Tests
 
+
+### Unittests
 ```
 npm run test
 ```
+
+### Manual test google and facebook
+Go to lib/test/manual
+Run
+```npm install```
+Copy sample.env to .env
+```cp sample.env .env```
+Open .env and add facebook and google credentials
+
+Go to http://locahost:2000
+
+Routes can be viewed at http://localhost:2000/documentation
 
 ## Contributing
 

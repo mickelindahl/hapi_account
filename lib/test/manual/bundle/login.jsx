@@ -25,7 +25,7 @@ const responseFacebook = ( res1 ) => {
     $.ajax({
         type:'POST',
         data:{
-            email:res1.email,
+            user:res1.email,
             token:res1.accessToken
         },
         url: '/account/loginFacebook'
@@ -52,7 +52,6 @@ const responseGoogle = ( response ) => {
     $.ajax({
         type:'POST',
         data:{
-            //email:res1.email,
             token:response.tokenId
         },
         url: '/account/loginGoogle'
