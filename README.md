@@ -139,6 +139,12 @@ Routes can be viewed using [hapi-swagger](https://www.npmjs.com/package/hapi-swa
   - `google` Credentials can be created ad [Google cloud console](https://console.cloud.google.com)
     - `client_id` {string} Google client id
   - `scopesAllowed` Array with names off the allowed scopes
+  - `waterline` {object}
+    - `config` {object} Waterline config
+      - `adapters`:{..adapters},
+      - `datastores`:{...datastores}
+    - `models` {object} model colletions from initialized orm. Use this if you already
+    have a waterline orm. Just make sure you include the models into your orm initialization
 
 **Kind**: inner method of [<code>plugin</code>](#module_plugin)  
 <a name="module_routes"></a>
