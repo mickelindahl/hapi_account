@@ -3,14 +3,20 @@ Hapi account
 
 A REST api for accounts built for [hapi](https://hapijs.com) server with 
 Bearer token authentication using [hapi-beaer-token-atuh]() and  
- datanase for storage of accounts adn tokens using 
- [hapi-waterline](https://github.com/Pencroff/hapi-waterline).
- * Automatic deletion of expired tokens
- * Email verification and password reset can be added with an email client (e.g. [mailgun]())  
- * Add custom pre and post calls to each route.   
- * Bearer token can either be set in `headers.authorization.token=Bearer {uuid}`
-  or sent in a cookie `token={uuid}`.
- * Facebook and Google login. With facebook or google login a account will automatically be created for the particular email. However a password will not be created. Thus this has to be done separately. Once a email is associated with an account a person will be login to this account when authenticating themslelf either by facebook, google or native login.
+ database for storage of accounts using [waterline](https://www.npmjs.com/package/waterline).
+Default adapter is [sails-disk](https://www.npmjs.com/package/sails-disk)
+
+
+## Features
+
+* Facebook login
+* Google login
+* Bearer token auth with cookie
+* Bearer token auth with payload
+* Automatic deletion of expired tokens
+* Email verification and password reset
+* Add custom pre and post calls to each route.
+
 ## Installation
 
 `npm install --save hapi-account `
@@ -21,8 +27,7 @@ Bearer token authentication using [hapi-beaer-token-atuh]() and
 
 const Hapi = require( 'hapi' );
 
-const server = new Hapi.Server();
-server.connection({ port: 3000 });
+const server = new Hapi.Server({);
 
 server.register( {
     register: require( 'hapi-account' ),
@@ -37,71 +42,39 @@ server.register( {
 });
 ```
 
+## Facebook login
+To get your `options.facebook.app_id` and `options.facebook.app_secret` got to
+[Facebook for developers](https://developers.facebook.com/). Login to an account and
+go to My Apps. Either user keys from an an existing app or create a new one. App id and secret
+can be found under settings
+
+
+## Google login
+To get your `options.google.client_id` go to [Google cloud console](https://console.cloud.google.com) and login.
+Choose and existing project in the top bar or create a new one. Go to APIs & Services to
+create or use existing client id
+
+## Email
+Get your preferred transporter for [nodmailer](https://www.npmjs.com/package/nodemailer) and add to
+`options.email.transporter`
+
+## Routes
+Routes can be viewed using [hapi-swagger](https://www.npmjs.com/package/hapi-swagger)
+
 ## API
 {{>all-docs~}}
 
-## Routes
-* Create account url `{ base path... }/`. If `options.verifyAccount` is 
- `false` then verify account route has to be called with a valid token. This can be done by
- supplying an `onPostCreate` `function(request, next)` that sends a email to the user
- with a url to a web-page that POST to verify account root with
- a valid token. A valid token is stored in `request.server.plugins['hapi-account].result.token.uuid`.
-* Login url `{ base path... }/login` 
-* Logout url `{ base path... }/logout`
-* Forgot password url `{ base path... }/forgotPassword`. In order to
- reset the password the user has to trigger rest password route with
- a valid token. This can be accomplished by supplying an 
- `onPostForgotPassword` `function(request, next)` that sends a email to 
- the user with a url to a web-page that POST to reset password
-  url with a valid token in the payload. A valid token is 
-  stored in `request.server.plugins['hapi-account].result.token.uuid`
-* Reset password url `{ base path... }/resetPassword`
-* Change password url `{ base path... }/changePassword`
-* Verify account url `{ base path... }/verifyAccount`
-
-## Table
-account
-```js
-attributes: {
-       user: {
-           type: 'string',
-           unique: true
-       },
-       email: {
-           type: 'string',
-           unique: true
-       },
-       password: 'string',
-       verified: 'boolean'
-   }
-```
-   
-token
-```js
-attributes: {
-      account_id:'integer',
-      uuid: 'string',
-      status: 'string',
-      expireAt: 'datetime'
-  }
-```
-
 ## Tests
-
-For facebook test to pass one have to add a valid user token in `testenv` to `FACEBOOK_TMP_USER_TOKEN`. Va token can be generated from your facebook developer
-app account `https://developers.facebook.com/apps` under **roles**->**Test Users** click **edit** on a user and then **Get an access token for this user**
-
-For google test to pass get an tokenId. TODO: add way to get one. Add a test server which expose this
 
 ```
 npm run test
-npm run test-facebook
-npm run test-google
 ```
 
 ## Contributing
 
+Feel free to submit issues and pull request on bugs or feature request.
+
 In lieu of a formal styleguide, take care to maintain the existing coding style.
-Add unit tests for any new or changed functionality. Lint and test your code.
+Add unit tests for any new or changed functionality.
 
 ## Release History

@@ -10,3 +10,4 @@ node_modules
 
 # No npm
 npm-debug.log*
+package-lock.json

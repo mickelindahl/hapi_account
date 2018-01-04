@@ -8,42 +8,22 @@ module.exports = {
 
     identity: 'token',
 
-    autoCreatedAt: false,
-    autoUpdatedAt: false,
-    autoPK:false,
+    primaryKey: 'id',
+    // autoCreatedAt: false,
+    // autoUpdatedAt: false,
+    // autoPK:false,
 
     attributes: {
-        accountId:'integer',
-        uuid: {
-            type:'string',
-            unique:true,
-            primaryKey: true
-        },
-        status: 'string',
-        expireAt: 'datetime',
-        createdAt: {
-            type: 'datetime',
-            defaultsTo: function() {return new Date();}
-        },
-        updatedAt: {
-            type: 'datetime',
-            defaultsTo: function() {return new Date();}
-        },
-        lastUsageAt: {
-            type: 'datetime',
-            defaultsTo: function() {return new Date();}
-        },
-        scope:{
-            type:'array',
-            defaultsTo:[]
-        }
+        id: { type: 'number', autoMigrations: { autoIncrement: true}},
+        account_id:{ type: 'number' },
+        uuid: {type:'string', required:true,autoMigrations: { unique: true}},
+        status: {type : 'string'},
+        expire_at: {type: 'string'},
+        created_at: { type: 'string', autoMigrations: { autoCreatedAt: true, columnType:'DATETIME' } },
+        update_at: { type: 'string', autoMigrations: { autoUpdateAt: true, columnType:'DATETIME' }  },
+        last_usage_at: {type: 'string',  autoMigrations: { columnType:'DATETIME' } },
+        scope:{ type:'json', defaultsTo:[]}
     },
-
-    beforeUpdate:(values, cb)=>{
-        values.updated_at=new Date();
-
-        cb()
-    }
 
 };
 
