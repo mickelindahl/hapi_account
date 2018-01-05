@@ -19,8 +19,8 @@ module.exports = {
         uuid: {type:'string', required:true,autoMigrations: { unique: true}},
         status: {type : 'string'},
         expire_at: {type: 'string'},
-        created_at: { type: 'string', autoMigrations: { autoCreatedAt: true, columnType:'TIMESTAMP' } },
-        update_at: { type: 'string', autoMigrations: { autoUpdateAt: true, columnType:'TIMESTAMP' }  },
+        created_at: { type: 'string', autoCreatedAt: true, autoMigrations: {  columnType:'TIMESTAMP' } },
+        updated_at: { type: 'string', autoUpdatedAt: true, autoMigrations: {  columnType:'TIMESTAMP' } },
         last_usage_at: {type: 'string',  autoMigrations: { columnType:'TIMESTAMP' } },
         scope:{ type:'json', defaultsTo:[]}
     },
