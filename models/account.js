@@ -25,8 +25,8 @@ module.exports = {
             type:'json',
             defaultsTo:[]
         },
-        created_at: { type: 'string', autoMigrations: { autoCreatedAt: true, columnType:'DATETIME' } },
-        update_at: { type: 'string', autoMigrations: { autoUpdateAt: true, columnType:'DATETIME' } },
+        created_at: { type: 'string', autoMigrations: { autoCreatedAt: true, columnType:'TIMESTAMP' } },
+        update_at: { type: 'string', autoMigrations: { autoUpdateAt: true, columnType:'TIMESTAMP' } },
         created_by:{
             type: 'string',
             defaultsTo: 'hapi-account'
