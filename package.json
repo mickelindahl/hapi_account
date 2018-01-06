@@ -6,6 +6,7 @@
   "scripts": {
     "test": "node_modules/.bin/lab -r lcov lib/test/google.js lib/test/facebook.js lib/test/index.js | ./node_modules/.bin/coveralls",
     "test-locally": "./node_modules/.bin/lab -l -m 30000 lib/test/google.js lib/test/facebook.js lib/test/index.js",
+    "test-index": "./node_modules/.bin/lab -l -m 30000 lib/test/index.js",
     "test-facebook": "./node_modules/.bin/lab -l -m 20000 lib/test/facebook.js",
     "test-google": "./node_modules/.bin/lab -l  -m 20000 lib/test/google.js",
     "test-cov-html": "./node_modules/.bin/lab -m 20000 -l -r html -o lib/test/coverage.html lib/test/google.js lib/test/facebook.js lib/test/index.js",
