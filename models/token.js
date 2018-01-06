@@ -18,10 +18,10 @@ module.exports = {
         account_id:{ type: 'number' },
         uuid: {type:'string', required:true,autoMigrations: { unique: true}},
         status: {type : 'string'},
-        expire_at: {type: 'string', autoMigrations: { columnType:'TIMESTAMP' }},
-        created_at: { type: 'string', autoCreatedAt: true, autoMigrations: {  columnType:'TIMESTAMP' } },
-        updated_at: { type: 'string', autoUpdatedAt: true, autoMigrations: {  columnType:'TIMESTAMP' } },
-        last_usage_at: {type: 'string', autoCreatedAt: true, autoMigrations: { columnType:'TIMESTAMP' } },
+        expire_at: {type: 'ref', autoMigrations: { columnType:'TIMESTAMP' }},
+        created_at: { type: 'ref', autoCreatedAt: true, autoMigrations: {  columnType:'TIMESTAMP' } },
+        updated_at: { type: 'ref', autoUpdatedAt: true, autoMigrations: {  columnType:'TIMESTAMP' } },
+        last_usage_at: {type: 'ref', autoCreatedAt: true, autoMigrations: { columnType:'TIMESTAMP' } },
         scope:{ type:'json', defaultsTo:[]}
     },
 
