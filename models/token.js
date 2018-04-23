@@ -15,7 +15,7 @@ module.exports = {
 
     attributes: {
         id: { type: 'number', autoMigrations: { autoIncrement: true}},
-        account_id:{ type: 'number' },
+        account_id:{ type: 'number' , autoMigrations: {} },
         uuid: {type:'string', required:true,autoMigrations: { unique: true}},
         status: {type : 'string'},
         expire_at: {type: 'ref', autoMigrations: { columnType:'TIMESTAMP' }},
