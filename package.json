@@ -1,6 +1,6 @@
 {
   "name": "hapi-account",
-  "version": "2.1.10",
+  "version": "2.1.11",
   "description": "Users management",
   "main": "lib/index.js",
   "scripts": {
