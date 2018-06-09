@@ -31,7 +31,8 @@ module.exports = {
             type: 'string',
             defaultsTo: 'hapi-account'
         }, // hapi-account | facebook | google
-        response: {type:'json'} // Response data connected with account from facebook or google
+        response: {type:'json'}, // Response data connected with account from facebook or google
+        meta: {type:'json'} // Meta data connected with account at creation e.g. name
     },
 
     beforeCreate:(value, cb )=>{
