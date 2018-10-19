@@ -29,24 +29,24 @@
   },
   "homepage": "https://github.com/mickelindahl/hapi_account#readme",
   "devDependencies": {
-    "code": "^5.1.2",
-    "coveralls": "^3.0.0",
-    "dotenv": "^4.0.0",
-    "hapi": "^17.2.0",
-    "jsdoc-to-markdown": "3.1.0-0",
-    "lab": "^15.1.2",
-    "mock-require": "^2.0.2"
+    "code": "^5.2.0",
+    "coveralls": "^3.0.2",
+    "dotenv": "^6.1.0",
+    "hapi": "^17.6.0",
+    "jsdoc-to-markdown": "4.0.1",
+    "lab": "^16.1.0",
+    "mock-require": "^3.0.2"
   },
   "dependencies": {
-    "bcryptjs": "^2.3.0",
-    "boom": "^7.1.1",
-    "cron": "^1.1.1",
-    "debug": "^3.1.0",
-    "hapi-auth-bearer-token": "^6.0.1",
-    "joi": "^13.0.2",
-    "request": "^2.81.0",
-    "sails-disk": "^1.0.0-12",
-    "waterline": "^0.13.1-9",
-    "uuid": "^3.0.1"
+    "bcryptjs": "^2.4.3",
+    "boom": "^7.2.0",
+    "cron": "^1.4.1",
+    "debug": "^4.1.0",
+    "hapi-auth-bearer-token": "^6.1.0",
+    "joi": "^14.0.0",
+    "request": "^2.88.0",
+    "sails-disk": "^1.0.1",
+    "waterline": "^0.13.5",
+    "uuid": "^3.3.2"
   }
 }
