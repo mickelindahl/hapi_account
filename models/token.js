@@ -7,12 +7,7 @@
 module.exports = {
 
     identity: 'token',
-
     primaryKey: 'id',
-    // autoCreatedAt: false,
-    // autoUpdatedAt: false,
-    // autoPK:false,
-
     attributes: {
         id: { type: 'number', autoMigrations: { autoIncrement: true}},
         account_id:{ type: 'number' , autoMigrations: {} },

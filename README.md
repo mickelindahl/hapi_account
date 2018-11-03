@@ -12,12 +12,10 @@ Default adapter is [sails-disk](https://www.npmjs.com/package/sails-disk)
 
 ## Features
 
-* Facebook login
-* Google login
-* Bearer token auth with cookie
-* Bearer token auth with payload
+* Create and login user via facebook or google
+* Bearer token auth with cookie or payload
 * Automatic deletion of expired tokens
-* Email verification and password reset
+* Endpoints for email verification and password reset
 * Add custom pre and post calls to each route.
 
 ## Installation
@@ -29,14 +27,22 @@ Default adapter is [sails-disk](https://www.npmjs.com/package/sails-disk)
 'use strict'
 
 const Hapi = require( 'hapi' );
+const adapter = require('sails-disk');
 
 const server = new Hapi.Server({);
 
 server.register( {
-    register: require( 'hapi-account' ),
+    plugin: require( 'hapi-account' ),
     options: { 
         accountVerified:false,
         basePath: "account",
+        facebook: {
+            app_id: 'an id',
+            app_secret: 'a secret,
+        }
+        google: {
+            client_id: 'an client id'
+        }
         events:[
           {type: 'onPostCreate', method:(request, next)=>{...the madgic}}  
           {type: 'onPostForgotPassword', method:(request, next)=>{...the madgic}}                  
@@ -156,6 +162,8 @@ Routes can be viewed using [hapi-swagger](https://www.npmjs.com/package/hapi-swa
 - `{options.basePath}/changePassword` {POST}
 - `{options.basePath}/forgotPassword` {POST}
 - `{options.basePath}/create` {POST}
+- `{options.basePath}/createFacebook` {POST}
+- `{options.basePath}/createGoogle` {POST}
 - `{options.basePath}/login` {POST}
 - `{options.basePath}/loginFacebook` {POST}
 - `{options.basePath}/loginGoogle` {POST}
@@ -191,5 +199,3 @@ Feel free to submit issues and pull request on bugs or feature request.
 
 In lieu of a formal styleguide, take care to maintain the existing coding style.
 Add unit tests for any new or changed functionality.
-
-## Release History
