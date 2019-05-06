@@ -9,18 +9,24 @@ Bearer token authentication using [hapi-beaer-token-atuh]() and
  database for storage of accounts using [waterline](https://www.npmjs.com/package/waterline).
 Default adapter is [sails-disk](https://www.npmjs.com/package/sails-disk)
 
+The login route with credentials user and password returns a token
+which will expire unless it is renewed by calling renewToken route
+within valid time period for the token. This time period can be set by the user.
+
 
 ## Features
 
 * Create and login user via facebook or google
-* Bearer token auth with cookie or payload
+* Bearer token auth via providing cookie with token or
+setting Authorization in header to `Bearer {token uuid}
 * Automatic deletion of expired tokens
+* Token renewal on calling renewToken within token valid time period
 * Endpoints for email verification and password reset
 * Add custom pre and post calls to each route.
 
 ## Installation
 
-`npm install --save hapi-account `
+`npm install --save hapi-account`
 
 ## Usage
 ```js
@@ -70,107 +76,11 @@ Get your preferred transporter for [nodmailer](https://www.npmjs.com/package/nod
 ## Routes
 Routes can be viewed using [hapi-swagger](https://www.npmjs.com/package/hapi-swagger)
 
+## Options
+
+See [options](./options.md)
+
 ## API
-<a name="module_plugin"></a>
-
-## plugin
-<a name="module_plugin..register"></a>
-
-### plugin~register()
-- `options` Plugin options object with the following keys:
-  - `accountVerified` If true then verified property in account is set to false.
-  Then user can not be login until account been verified. An event chain
-  have to be triggered such that verifyAccount route is called with valid
-  token. This can be accomplished by providing a `onPostCreate` `event`
-  that for example sends an email url that that triggers the verifyAccount
-  route with valid token.
-  - `basePath`  base path for route.
-  - `cronTimes`
-    - `expiredTokenCollector` The time to fire off your job. This can be in the
-    - `extendExpirationDate` The time to fire off your job. This can be in the
-  form of cron syntax or a JS Date object (see https://www.npmjs.com/package/cron).
-  - `email` an object with email setup
-    - `transporter` a [nodemailer](https://www.npmjs.com/package/nodemailer) transporter
-    - `event` an array of objects with the following
-      - `type` Post events uses the signature `function(request, next)`.
-        -  `onPostCreate` used to send verification emails. If defined then
-         `options.accountVerified` should be false. Thus the email have to provide ulr
-        that the user can click on to trigger `validateAccountPassword` route in with
-        valid token. The token is available in
-        `request.server.plugins['hapi-account'].result.token.uuid`.
-        -  `onPostForgotPassword` Have to provide url that the user can
-        click to trigger `resetPassword` route in with a valid  token and
-        a new password in order to reset a password.
-      - `from` sender email
-      - `subject` email subject
-      - `text` {function(request) | string} to create text body with
-      - `html` {function(request) | string} to create html body with
-  - `events` an array of objects with the following keys:
-    - `type` {string} the extension point event. Pre events uses the signature
-       One of:
-       - `onPreChangedPassword` Called before changePassword handler is triggered.
-       - `onPreCreate` Called before `created` handler is triggered.
-       - `onPreForgotPassword` Called before `forgetPassword` handler is triggered.
-       - `onPreLogin` Called before `login` handler is triggered.
-       - `onPreLogout` Called before `logout` handler is triggered.
-       - `onPreResetPassword` Called before `resetPassword` handler is triggered.
-       - `onPreVerifyAccount` Called before `verifyAccount` handler is triggered.
-       - `onPreUpdateScope` Called before `updateScope` handler is triggered.
-       - `onPostChangePassword` Called after `changePassword` handler was triggered.
-       - `onPostCreate` Called after `created` handler was triggered.
-       - `onPostForgotPassword` Called after `forgotPassword`hanlder was triggered.
-       - `onPostLogin` Called after `login` handler was triggered.
-       - `onPostLogout` Called after `logout`handler was triggered.
-       - `onPostResetPassword` Called after `resetPassword` handler was triggered
-       - `onPostVerifyAccount` Called after `verifyAccount` route has been
-       - `onPostUpdateScope` Called before `updateScope` handler is triggered.
-
-    - `method` {async function(request, h) || async function(request)} `Request` is the sever request object
-      and  `h` [hapi response toolkit](https://hapijs.com/api#response-toolkit). If object is returned with
-      `return result` then result is assigned to request.pre with key defined in `assign`
-      (See https://hapijs.com/api#route-handler). Data available from upstreams call
-      are stored in two places, either in `request.pre` or in `request.server.plugins['hapi-account'].result`.
-      triggered with `account` and `token` objects are available in
-     'request.plugins['hapi-account'].result'.
-    - `assign` {string} result returned from `method`is stored with this key
-  - `expire` Object with durations from creation tokens are valid.
-    - `create` Duration (in milliseconds) the  token created in `create` route is valid
-    - `login` Duration (in milliseconds) the  token created in `login` route is valid
-    - `forgotPassword` Duration (in miliseconds) the  token created in `forgotPassword` is valid
-  e.g. `{isAccount:(request, reply)=>{..stuff}, encryptPassword:(request, reply)=>{...other stuff}}`.
-  See below for method definitions
-  - `facebook` {object} Credentials can be created at [facebook for developer](https://developers.facebook.com/)
-    - `app_id` {string} Facebook app id
-    - `app_secret` {string} Facebook app secret
-  - `google` Credentials can be created ad [Google cloud console](https://console.cloud.google.com)
-    - `client_id` {string} Google client id
-  - `methods` an array of objects with the following keys:
-    - `type` {string} the extension point event. Pre events uses the signature. Se pre.js for description
-       One of:
-      - destroyToken
-      - getDatabaseAccount
-      - getDatabaseToken
-      - isAccount
-      - verifyToken
-      - verifyUser
-      - verifyPassword
-    - `method` Method to replace
-  - `expire` Object with durations from creation tokens are valid.
-    - `create` Duration (in milliseconds) the  token created in `create` route is valid
-    - `login` Duration (in milliseconds) the  token created in `login` route is valid
-    - `forgotPassword` Duration (in miliseconds) the  token created in `forgotPassword` is valid
-  e.g. `{isAccount:(request, reply)=>{..stuff}, encryptPassword:(request, reply)=>{...other stuff}}`.
-  See below for method definitions
-  - `facebook` {object} Credentials can be created at [facebook for developer](https://developers.fa
-  - `scopesAllowed` Array with names off the allowed scopes
-  - `waterline` {object}
-    - `config` {object} Waterline config
-      - `adapters`:{..adapters},
-      - `datastores`:{...datastores}
-    - `models` {object} model colletions from initialized orm. Use this if you already
-    have a waterline orm. Just make sure you include the models into your orm initialization
-
-**Kind**: inner method of [<code>plugin</code>](#module_plugin)  
 <a name="module_routes"></a>
 
 ## routes
@@ -186,11 +96,274 @@ Routes can be viewed using [hapi-swagger](https://www.npmjs.com/package/hapi-swa
 - `{options.basePath}/loginFacebook` {POST}
 - `{options.basePath}/loginGoogle` {POST}
 - `{options.basePath}/logout` {POST}
+- `{options.basePath}/renewToken` {POST}
 - `{options.basePath}/resetPassword` {POST}
 - `{options.basePath}/updateScope` {POST}
 - `{options.basePath}/verifyAccount` {POST}
 
 **Kind**: inner method of [<code>routes</code>](#module_routes)  
+<a name="module_controller"></a>
+
+## controller
+
+* [controller](#module_controller)
+    * [~changePassword()](#module_controller..changePassword)
+    * [~create()](#module_controller..create)
+    * [~forgotPassword()](#module_controller..forgotPassword)
+    * [~login()](#module_controller..login)
+    * [~logout()](#module_controller..logout)
+    * [~renewToken()](#module_controller..renewToken)
+    * [~resetPassword()](#module_controller..resetPassword)
+    * [~updateScope()](#module_controller..updateScope)
+    * [~verifyAccount()](#module_controller..verifyAccount)
+
+<a name="module_controller..changePassword"></a>
+
+### controller~changePassword()
+Handler for change password route
+
+- `request` hapi server request object
+- `reply` hapi server reply object
+
+return {promise}
+
+**Kind**: inner method of [<code>controller</code>](#module_controller)  
+<a name="module_controller..create"></a>
+
+### controller~create()
+Handler for create route. Used for routes create, createFacebook and createGoogle.
+
+- `request` hapi server request object
+- `h` [hapi response toolkit](https://hapijs.com/api#response-toolkit)
+
+return
+   - `response` {string} Created
+   - `code` 201
+
+**Kind**: inner method of [<code>controller</code>](#module_controller)  
+<a name="module_controller..forgotPassword"></a>
+
+### controller~forgotPassword()
+Handler for forgotPassword route
+
+- `request` hapi server request object
+- `h` [hapi response toolkit](https://hapijs.com/api#response-toolkit)
+
+return
+   - `response` {string} Forgot token created
+
+**Kind**: inner method of [<code>controller</code>](#module_controller)  
+<a name="module_controller..login"></a>
+
+### controller~login()
+Handler for login route. Used for login, renewToken, loginFacebook and loginGoogle
+
+- `request` hapi server request object
+- `h` [hapi response toolkit](https://hapijs.com/api#response-toolkit)
+
+return
+  - `response` {json}
+    - `token` token uuid
+    - `expires_in` time to token expiration
+  - `header`
+    - `cookie` token uuid as cookie. If `x-forwarded-proto == https` then secure
+
+**Kind**: inner method of [<code>controller</code>](#module_controller)  
+<a name="module_controller..logout"></a>
+
+### controller~logout()
+Handler for logout route
+
+- `request` hapi server request object
+- `h` [hapi response toolkit](https://hapijs.com/api#response-toolkit)
+
+return
+   - `response` {string} Logged out
+
+**Kind**: inner method of [<code>controller</code>](#module_controller)  
+<a name="module_controller..renewToken"></a>
+
+### controller~renewToken()
+Handler for renew token route.
+
+- `request` hapi server request object
+- `h` [hapi response toolkit](https://hapijs.com/api#response-toolkit)
+
+return
+  - `response` {json}
+    - `token` token uuid
+    - `expires_in` time to token expiration
+  - `header`
+    - `cookie` token uuid as cookie. If `x-forwarded-proto == https` then secure
+
+**Kind**: inner method of [<code>controller</code>](#module_controller)  
+<a name="module_controller..resetPassword"></a>
+
+### controller~resetPassword()
+Handler for resetPassword route
+
+- `request` hapi server request object
+- `h` [hapi response toolkit](https://hapijs.com/api#response-toolkit)
+
+return
+   - `response` {string} Password updated
+
+**Kind**: inner method of [<code>controller</code>](#module_controller)  
+<a name="module_controller..updateScope"></a>
+
+### controller~updateScope()
+Handler to set an account scope
+
+- `request` hapi server request object
+- `h` [hapi response toolkit](https://hapijs.com/api#response-toolkit)
+
+return
+   - `response` {string} Scope updated
+
+**Kind**: inner method of [<code>controller</code>](#module_controller)  
+<a name="module_controller..verifyAccount"></a>
+
+### controller~verifyAccount()
+Handler for verifyAccount route
+
+- `request` hapi server request object
+- `h` [hapi response toolkit](https://hapijs.com/api#response-toolkit)
+
+return
+   - `response` {string} Account verified
+
+**Kind**: inner method of [<code>controller</code>](#module_controller)  
+<a name="module_controller"></a>
+
+## controller
+
+* [controller](#module_controller)
+    * [~changePassword()](#module_controller..changePassword)
+    * [~create()](#module_controller..create)
+    * [~forgotPassword()](#module_controller..forgotPassword)
+    * [~login()](#module_controller..login)
+    * [~logout()](#module_controller..logout)
+    * [~renewToken()](#module_controller..renewToken)
+    * [~resetPassword()](#module_controller..resetPassword)
+    * [~updateScope()](#module_controller..updateScope)
+    * [~verifyAccount()](#module_controller..verifyAccount)
+
+<a name="module_controller..changePassword"></a>
+
+### controller~changePassword()
+Handler for change password route
+
+- `request` hapi server request object
+- `reply` hapi server reply object
+
+return {promise}
+
+**Kind**: inner method of [<code>controller</code>](#module_controller)  
+<a name="module_controller..create"></a>
+
+### controller~create()
+Handler for create route. Used for routes create, createFacebook and createGoogle.
+
+- `request` hapi server request object
+- `h` [hapi response toolkit](https://hapijs.com/api#response-toolkit)
+
+return
+   - `response` {string} Created
+   - `code` 201
+
+**Kind**: inner method of [<code>controller</code>](#module_controller)  
+<a name="module_controller..forgotPassword"></a>
+
+### controller~forgotPassword()
+Handler for forgotPassword route
+
+- `request` hapi server request object
+- `h` [hapi response toolkit](https://hapijs.com/api#response-toolkit)
+
+return
+   - `response` {string} Forgot token created
+
+**Kind**: inner method of [<code>controller</code>](#module_controller)  
+<a name="module_controller..login"></a>
+
+### controller~login()
+Handler for login route. Used for login, renewToken, loginFacebook and loginGoogle
+
+- `request` hapi server request object
+- `h` [hapi response toolkit](https://hapijs.com/api#response-toolkit)
+
+return
+  - `response` {json}
+    - `token` token uuid
+    - `expires_in` time to token expiration
+  - `header`
+    - `cookie` token uuid as cookie. If `x-forwarded-proto == https` then secure
+
+**Kind**: inner method of [<code>controller</code>](#module_controller)  
+<a name="module_controller..logout"></a>
+
+### controller~logout()
+Handler for logout route
+
+- `request` hapi server request object
+- `h` [hapi response toolkit](https://hapijs.com/api#response-toolkit)
+
+return
+   - `response` {string} Logged out
+
+**Kind**: inner method of [<code>controller</code>](#module_controller)  
+<a name="module_controller..renewToken"></a>
+
+### controller~renewToken()
+Handler for renew token route.
+
+- `request` hapi server request object
+- `h` [hapi response toolkit](https://hapijs.com/api#response-toolkit)
+
+return
+  - `response` {json}
+    - `token` token uuid
+    - `expires_in` time to token expiration
+  - `header`
+    - `cookie` token uuid as cookie. If `x-forwarded-proto == https` then secure
+
+**Kind**: inner method of [<code>controller</code>](#module_controller)  
+<a name="module_controller..resetPassword"></a>
+
+### controller~resetPassword()
+Handler for resetPassword route
+
+- `request` hapi server request object
+- `h` [hapi response toolkit](https://hapijs.com/api#response-toolkit)
+
+return
+   - `response` {string} Password updated
+
+**Kind**: inner method of [<code>controller</code>](#module_controller)  
+<a name="module_controller..updateScope"></a>
+
+### controller~updateScope()
+Handler to set an account scope
+
+- `request` hapi server request object
+- `h` [hapi response toolkit](https://hapijs.com/api#response-toolkit)
+
+return
+   - `response` {string} Scope updated
+
+**Kind**: inner method of [<code>controller</code>](#module_controller)  
+<a name="module_controller..verifyAccount"></a>
+
+### controller~verifyAccount()
+Handler for verifyAccount route
+
+- `request` hapi server request object
+- `h` [hapi response toolkit](https://hapijs.com/api#response-toolkit)
+
+return
+   - `response` {string} Account verified
+
+**Kind**: inner method of [<code>controller</code>](#module_controller)  
 ## Tests
 
 

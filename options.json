@@ -1,0 +1,378 @@
+{
+    "type": "object",
+    "properties": {
+        "accountVerified": {
+            "description": "If true then verified property in account is set to false.\nThen user can not be login until account been verified. An event chain\nhave to be triggered such that verifyAccount route is called with valid\ntoken. This can be accomplished by providing a `onPostCreate` `event`\nthat for example sends an email url that that triggers the verifyAccount\nroute with valid token.",
+            "default": false,
+            "type": "boolean"
+        },
+        "authStrategyName": {
+            "description": "The server.auth.strategy schema name (hapi accunt used\n\"bearer-access-token\" schema) see [hapijs](https://hapijs.com/tutorials/auth#strategies).",
+            "default": "simple",
+            "type": "string"
+        },
+        "basePath": {
+            "description": "base path for routes as {basePath}/login or {basePath}/create",
+            "default": "",
+            "type": "string"
+        },
+        "cronTime": {
+            "default": {
+                "expiredTokenCollector": "00 */10 * * * *"
+            },
+            "type": "object",
+            "properties": {
+                "expiredTokenCollector": {
+                    "description": "The time to fire your job for removing expired tokens in db. This can be in the\nform of cron syntax or a JS Date object (see https://www.npmjs.com/package/cron).",
+                    "default": "00 */10 * * * *",
+                    "type": "string"
+                }
+            },
+            "additionalProperties": false,
+            "patterns": []
+        },
+        "email": {
+            "description": "An object with email setup",
+            "type": "object",
+            "properties": {
+                "transporter": {
+                    "description": "nodemailer transporter",
+                    "type": "object",
+                    "properties": {},
+                    "additionalProperties": true,
+                    "patterns": []
+                },
+                "events": {
+                    "type": "array",
+                    "items": {
+                        "type": "object",
+                        "properties": {
+                            "type": {
+                                "description": "event type to attached send email to",
+                                "enum": [
+                                    "onPreChangedPassword",
+                                    "onPreCreate",
+                                    "onPreForgotPassword",
+                                    "onPreLogin",
+                                    "onPreLogout",
+                                    "onPreResetPassword",
+                                    "onPreVerifyAccount",
+                                    "onPreUpdateScope",
+                                    "onPostChangePassword",
+                                    "onPostCreate",
+                                    "onPostForgotPassword",
+                                    "onPostLogin",
+                                    "onPostLogout",
+                                    "onPostResetPassword",
+                                    "onPostVerifyAccount",
+                                    "onPostUpdateScope"
+                                ],
+                                "type": "string"
+                            },
+                            "from": {
+                                "description": "sending email",
+                                "type": "string"
+                            },
+                            "to": {
+                                "description": "receiving email",
+                                "type": "string"
+                            },
+                            "text": {
+                                "description": "plain text email",
+                                "oneOf": [
+                                    {
+                                        "type": "object",
+                                        "properties": {},
+                                        "additionalProperties": true,
+                                        "patterns": []
+                                    },
+                                    {
+                                        "type": "string"
+                                    }
+                                ]
+                            },
+                            "html": {
+                                "description": "html email",
+                                "oneOf": [
+                                    {
+                                        "type": "object",
+                                        "properties": {},
+                                        "additionalProperties": true,
+                                        "patterns": []
+                                    },
+                                    {
+                                        "type": "string"
+                                    }
+                                ]
+                            },
+                            "subject": {
+                                "description": "email title",
+                                "type": "string"
+                            }
+                        },
+                        "additionalProperties": false,
+                        "patterns": [],
+                        "required": [
+                            "type",
+                            "from",
+                            "to",
+                            "text",
+                            "html",
+                            "subject"
+                        ]
+                    }
+                }
+            },
+            "additionalProperties": false,
+            "patterns": [],
+            "required": [
+                "transporter"
+            ]
+        },
+        "events": {
+            "default": [],
+            "type": "array",
+            "items": {
+                "type": "object",
+                "properties": {
+                    "type": {
+                        "description": "Post events uses the signature `function(request, h)`.",
+                        "enum": [
+                            "onPreChangedPassword",
+                            "onPreCreate",
+                            "onPreForgotPassword",
+                            "onPreLogin",
+                            "onPreLogout",
+                            "onPreResetPassword",
+                            "onPreVerifyAccount",
+                            "onPreUpdateScope",
+                            "onPostChangePassword",
+                            "onPostCreate",
+                            "onPostForgotPassword",
+                            "onPostLogin",
+                            "onPostLogout",
+                            "onPostResetPassword",
+                            "onPostVerifyAccount",
+                            "onPostUpdateScope"
+                        ],
+                        "type": "string"
+                    },
+                    "method": {
+                        "description": "{async function(request, h) || async function(request)} `Request` is the sever request object\nand  `h` [hapi response toolkit](https://hapijs.com/api#response-toolkit). If object is returned with",
+                        "type": "object",
+                        "properties": {},
+                        "additionalProperties": true,
+                        "patterns": []
+                    },
+                    "assign": {
+                        "description": "{string} result returned from `method`is stored with this key",
+                        "type": "string"
+                    }
+                },
+                "additionalProperties": false,
+                "patterns": [],
+                "required": [
+                    "type",
+                    "method"
+                ]
+            }
+        },
+        "expire": {
+            "description": "Object with durations from creation tokens are valid.",
+            "default": {
+                "create": 432000000,
+                "forgotPassword": 86400000,
+                "login": 432000000
+            },
+            "type": "object",
+            "properties": {
+                "create": {
+                    "description": "Duration (in milliseconds) the  token created in `create` route is valid",
+                    "default": 432000000,
+                    "type": "number"
+                },
+                "forgotPassword": {
+                    "description": "Duration (in miliseconds) the  token created in `forgotPassword` is valid",
+                    "default": 86400000,
+                    "type": "number"
+                },
+                "login": {
+                    "description": " Duration (in milliseconds) the  token created in `login` route is valid",
+                    "default": 432000000,
+                    "type": "number"
+                }
+            },
+            "additionalProperties": false,
+            "patterns": []
+        },
+        "facebook": {
+            "type": "object",
+            "properties": {
+                "app_id": {
+                    "description": "facebook app id",
+                    "type": "string"
+                },
+                "app_secret": {
+                    "description": "facebook app secret",
+                    "type": "string"
+                }
+            },
+            "additionalProperties": false,
+            "patterns": [],
+            "required": [
+                "app_id",
+                "app_secret"
+            ]
+        },
+        "google": {
+            "type": "object",
+            "properties": {
+                "client_id": {
+                    "description": "google client id",
+                    "type": "string"
+                }
+            },
+            "additionalProperties": false,
+            "patterns": [],
+            "required": [
+                "client_id"
+            ]
+        },
+        "methods": {
+            "description": "Overide controller methods",
+            "default": [],
+            "type": "array",
+            "items": {
+                "type": "object",
+                "properties": {
+                    "type": {
+                        "description": "Name of controller method to replace",
+                        "enum": [
+                            "destroyToken",
+                            "getDatabaseAccount",
+                            "getDatabaseToken",
+                            "isAccount",
+                            "verifyToken",
+                            "verifyUser",
+                            "verifyPassword"
+                        ],
+                        "type": "string"
+                    },
+                    "method": {
+                        "description": "Method to replace",
+                        "type": "object",
+                        "properties": {},
+                        "additionalProperties": true,
+                        "patterns": []
+                    }
+                },
+                "additionalProperties": false,
+                "patterns": [],
+                "required": [
+                    "type",
+                    "method"
+                ]
+            }
+        },
+        "scopesAllowed": {
+            "description": "Array with names off the allowed scopes",
+            "default": [
+                "user",
+                "admin"
+            ],
+            "type": "array",
+            "items": {
+                "type": "string"
+            }
+        },
+        "waterline": {
+            "description": "Waterline config se (https://www.npmjs.com/package/waterline",
+            "type": "object",
+            "properties": {
+                "config": {
+                    "default": {
+                        "adapters": {
+                            "sails-disk": {
+                                "identity": "sails-disk",
+                                "adapterApiVersion": 1,
+                                "defaults": {
+                                    "schema": false,
+                                    "dir": ".tmp/localDiskDb"
+                                },
+                                "datastores": {}
+                            }
+                        },
+                        "datastores": {
+                            "default": {
+                                "adapter": "sails-disk"
+                            }
+                        }
+                    },
+                    "type": "object",
+                    "properties": {
+                        "adapters": {
+                            "description": "sails adapter e.g.sails-postgres",
+                            "default": {
+                                "sails-disk": {
+                                    "identity": "sails-disk",
+                                    "adapterApiVersion": 1,
+                                    "defaults": {
+                                        "schema": false,
+                                        "dir": ".tmp/localDiskDb"
+                                    },
+                                    "datastores": {}
+                                }
+                            },
+                            "type": "object",
+                            "properties": {},
+                            "additionalProperties": true,
+                            "patterns": []
+                        },
+                        "datastores": {
+                            "description": "Name datastore and corresponding adapter name",
+                            "default": {
+                                "default": {
+                                    "adapter": "sails-disk"
+                                }
+                            },
+                            "type": "object",
+                            "properties": {
+                                "default": {
+                                    "description": "Default datastore adapter name",
+                                    "default": {
+                                        "adapter": "sails-disk"
+                                    },
+                                    "type": "object",
+                                    "properties": {},
+                                    "additionalProperties": true,
+                                    "patterns": []
+                                }
+                            },
+                            "additionalProperties": false,
+                            "patterns": [],
+                            "required": [
+                                "default"
+                            ]
+                        }
+                    },
+                    "additionalProperties": false,
+                    "patterns": [],
+                    "required": [
+                        "adapters"
+                    ]
+                },
+                "models": {
+                    "description": "model colletions from initialized orm. Use this if you already\n have a waterline orm. Just make sure you include the models into your orm initialization",
+                    "type": "object",
+                    "properties": {},
+                    "additionalProperties": true,
+                    "patterns": []
+                }
+            },
+            "additionalProperties": false,
+            "patterns": []
+        }
+    },
+    "additionalProperties": false,
+    "patterns": []
+}

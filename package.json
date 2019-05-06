@@ -10,7 +10,8 @@
     "test-facebook": "./node_modules/.bin/lab -l -m 20000 lib/test/facebook.js",
     "test-google": "./node_modules/.bin/lab -l  -m 20000 lib/test/google.js",
     "test-cov-html": "./node_modules/.bin/lab -m 20000 -l -r html -o lib/test/coverage.html lib/test/google.js lib/test/facebook.js lib/test/index.js",
-    "jsdoc-to-markdown": "jsdoc2md --template README.hbs --files lib/index.js lib/routes.js > README.md"
+    "jsdoc-to-markdown": "npm run schema-to-markdown && jsdoc2md --template README.hbs --files lib/routes.js lib/controller.js > README.md",
+    "schema-to-markdown": "node generate-documentation-from-schema.js && jsonschema2md -d options.json -o . -v '04'"
   },
   "repository": {
     "type": "git",
@@ -29,24 +30,27 @@
   },
   "homepage": "https://github.com/mickelindahl/hapi_account#readme",
   "devDependencies": {
+    "@adobe/jsonschema2md": "^2.1.0",
+    "@hapi/hapi": "^18.3.1",
     "code": "^5.2.4",
     "coveralls": "^3.0.2",
-    "dotenv": "^6.2.0",
-    "hapi": "^18.1.0",
+    "dotenv": "^8.0.0",
+    "joi-to-json-schema": "^5.0.0",
     "jsdoc-to-markdown": "4.0.1",
     "lab": "^18.0.1",
     "mock-require": "^3.0.3"
   },
   "dependencies": {
+    "@hapi/joi": "^15.0.1",
     "bcryptjs": "^2.4.3",
     "boom": "^7.3.0",
     "cron": "^1.6.0",
     "debug": "^4.1.1",
     "hapi-auth-bearer-token": "^6.1.1",
-    "joi": "^14.3.1",
+    "npm-check-updates": "^3.1.9",
     "request": "^2.88.0",
     "sails-disk": "^1.1.0",
-    "waterline": "^0.13.6",
-    "uuid": "^3.3.2"
+    "uuid": "^3.3.2",
+    "waterline": "^0.13.6"
   }
 }

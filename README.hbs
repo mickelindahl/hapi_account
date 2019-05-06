@@ -9,18 +9,24 @@ Bearer token authentication using [hapi-beaer-token-atuh]() and
  database for storage of accounts using [waterline](https://www.npmjs.com/package/waterline).
 Default adapter is [sails-disk](https://www.npmjs.com/package/sails-disk)
 
+The login route with credentials user and password returns a token
+which will expire unless it is renewed by calling renewToken route
+within valid time period for the token. This time period can be set by the user.
+
 
 ## Features
 
 * Create and login user via facebook or google
-* Bearer token auth with cookie or payload
+* Bearer token auth via providing cookie with token or
+setting Authorization in header to `Bearer {token uuid}
 * Automatic deletion of expired tokens
+* Token renewal on calling renewToken within token valid time period
 * Endpoints for email verification and password reset
 * Add custom pre and post calls to each route.
 
 ## Installation
 
-`npm install --save hapi-account `
+`npm install --save hapi-account`
 
 ## Usage
 ```js
@@ -69,6 +75,10 @@ Get your preferred transporter for [nodmailer](https://www.npmjs.com/package/nod
 
 ## Routes
 Routes can be viewed using [hapi-swagger](https://www.npmjs.com/package/hapi-swagger)
+
+## Options
+
+See [options](./options.md)
 
 ## API
 {{>all-docs~}}
