@@ -155,7 +155,7 @@ return
 **Kind**: inner method of [<code>controller</code>](#module_controller)  
 <a name="module_controller..login"></a>
 
-### controller~login()
+### controller.auth()
 Handler for login route. Used for login, renewToken, loginFacebook and loginGoogle
 
 - `request` hapi server request object
@@ -286,7 +286,7 @@ return
 **Kind**: inner method of [<code>controller</code>](#module_controller)  
 <a name="module_controller..login"></a>
 
-### controller~login()
+### controller.auth()
 Handler for login route. Used for login, renewToken, loginFacebook and loginGoogle
 
 - `request` hapi server request object

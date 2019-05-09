@@ -249,8 +249,8 @@
                         "description": "Name of controller method to replace",
                         "enum": [
                             "destroyToken",
-                            "getDatabaseAccount",
-                            "getDatabaseToken",
+                            "getAccountDatabase",
+                            "getTokenDatabase",
                             "isAccount",
                             "verifyToken",
                             "verifyUser",
