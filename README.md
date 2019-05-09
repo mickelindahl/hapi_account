@@ -23,6 +23,7 @@ setting Authorization in header to `Bearer {token uuid}
 * Token renewal on calling renewToken within token valid time period
 * Endpoints for email verification and password reset
 * Add custom pre and post calls to each route.
+* Documentation of routes can be shown with [hapi-swagger](https://www.npmjs.com/package/hapi-swagger).
 
 ## Installation
 
@@ -107,16 +108,32 @@ See [options](./options.md)
 ## controller
 
 * [controller](#module_controller)
+    * [~auth()](#module_controller..auth)
     * [~changePassword()](#module_controller..changePassword)
     * [~create()](#module_controller..create)
     * [~forgotPassword()](#module_controller..forgotPassword)
-    * [~login()](#module_controller..login)
     * [~logout()](#module_controller..logout)
     * [~renewToken()](#module_controller..renewToken)
     * [~resetPassword()](#module_controller..resetPassword)
     * [~updateScope()](#module_controller..updateScope)
     * [~verifyAccount()](#module_controller..verifyAccount)
 
+<a name="module_controller..auth"></a>
+
+### controller~auth()
+Handler for login, renewToken, loginFacebook and loginGoogle route
+
+- `request` hapi server request object
+- `h` [hapi response toolkit](https://hapijs.com/api#response-toolkit)
+
+return
+  - `response` {json}
+    - `token` token uuid
+    - `expires_in` time to token expiration
+  - `header`
+    - `cookie` token uuid as cookie. If `x-forwarded-proto == https` then secure
+
+**Kind**: inner method of [<code>controller</code>](#module_controller)  
 <a name="module_controller..changePassword"></a>
 
 ### controller~changePassword()
@@ -151,22 +168,6 @@ Handler for forgotPassword route
 
 return
    - `response` {string} Forgot token created
-
-**Kind**: inner method of [<code>controller</code>](#module_controller)  
-<a name="module_controller..login"></a>
-
-### controller.auth()
-Handler for login route. Used for login, renewToken, loginFacebook and loginGoogle
-
-- `request` hapi server request object
-- `h` [hapi response toolkit](https://hapijs.com/api#response-toolkit)
-
-return
-  - `response` {json}
-    - `token` token uuid
-    - `expires_in` time to token expiration
-  - `header`
-    - `cookie` token uuid as cookie. If `x-forwarded-proto == https` then secure
 
 **Kind**: inner method of [<code>controller</code>](#module_controller)  
 <a name="module_controller..logout"></a>
@@ -238,16 +239,32 @@ return
 ## controller
 
 * [controller](#module_controller)
+    * [~auth()](#module_controller..auth)
     * [~changePassword()](#module_controller..changePassword)
     * [~create()](#module_controller..create)
     * [~forgotPassword()](#module_controller..forgotPassword)
-    * [~login()](#module_controller..login)
     * [~logout()](#module_controller..logout)
     * [~renewToken()](#module_controller..renewToken)
     * [~resetPassword()](#module_controller..resetPassword)
     * [~updateScope()](#module_controller..updateScope)
     * [~verifyAccount()](#module_controller..verifyAccount)
 
+<a name="module_controller..auth"></a>
+
+### controller~auth()
+Handler for login, renewToken, loginFacebook and loginGoogle route
+
+- `request` hapi server request object
+- `h` [hapi response toolkit](https://hapijs.com/api#response-toolkit)
+
+return
+  - `response` {json}
+    - `token` token uuid
+    - `expires_in` time to token expiration
+  - `header`
+    - `cookie` token uuid as cookie. If `x-forwarded-proto == https` then secure
+
+**Kind**: inner method of [<code>controller</code>](#module_controller)  
 <a name="module_controller..changePassword"></a>
 
 ### controller~changePassword()
@@ -282,22 +299,6 @@ Handler for forgotPassword route
 
 return
    - `response` {string} Forgot token created
-
-**Kind**: inner method of [<code>controller</code>](#module_controller)  
-<a name="module_controller..login"></a>
-
-### controller.auth()
-Handler for login route. Used for login, renewToken, loginFacebook and loginGoogle
-
-- `request` hapi server request object
-- `h` [hapi response toolkit](https://hapijs.com/api#response-toolkit)
-
-return
-  - `response` {json}
-    - `token` token uuid
-    - `expires_in` time to token expiration
-  - `header`
-    - `cookie` token uuid as cookie. If `x-forwarded-proto == https` then secure
 
 **Kind**: inner method of [<code>controller</code>](#module_controller)  
 <a name="module_controller..logout"></a>
