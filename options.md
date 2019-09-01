@@ -19,7 +19,6 @@
 | [email](#email)                       | `object`   | Optional | No       |                                                                    | (this schema) |
 | [events](#events)                     | `object[]` | Optional | No       | `[]`                                                               | (this schema) |
 | [expire](#expire)                     | `object`   | Optional | No       | `{"create":432000000,"forgotPassword":86400000,"login":432000000}` | (this schema) |
-| [facebook](#facebook)                 | `object`   | Optional | No       |                                                                    | (this schema) |
 | [google](#google)                     | `object`   | Optional | No       |                                                                    | (this schema) |
 | [methods](#methods)                   | `object[]` | Optional | No       | `[]`                                                               | (this schema) |
 | [scopesAllowed](#scopesallowed)       | `string[]` | Optional | No       | `["user","admin"]`                                                 | (this schema) |
@@ -432,49 +431,6 @@ Duration (in milliseconds) the token created in `login` route is valid
 ##### login Type
 
 `number`
-
-## facebook
-
-`facebook`
-
-- is optional
-- type: `object`
-- defined in this schema
-
-### facebook Type
-
-`object` with following properties:
-
-| Property     | Type   | Required     |
-| ------------ | ------ | ------------ |
-| `app_id`     | string | **Required** |
-| `app_secret` | string | **Required** |
-
-#### app_id
-
-facebook app id
-
-`app_id`
-
-- is **required**
-- type: `string`
-
-##### app_id Type
-
-`string`
-
-#### app_secret
-
-facebook app secret
-
-`app_secret`
-
-- is **required**
-- type: `string`
-
-##### app_secret Type
-
-`string`
 
 ## google
 

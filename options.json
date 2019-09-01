@@ -205,25 +205,6 @@
             "additionalProperties": false,
             "patterns": []
         },
-        "facebook": {
-            "type": "object",
-            "properties": {
-                "app_id": {
-                    "description": "facebook app id",
-                    "type": "string"
-                },
-                "app_secret": {
-                    "description": "facebook app secret",
-                    "type": "string"
-                }
-            },
-            "additionalProperties": false,
-            "patterns": [],
-            "required": [
-                "app_id",
-                "app_secret"
-            ]
-        },
         "google": {
             "type": "object",
             "properties": {

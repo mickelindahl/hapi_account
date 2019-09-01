@@ -43,10 +43,6 @@ server.register( {
     options: { 
         accountVerified:false,
         basePath: "account",
-        facebook: {
-            app_id: 'an id',
-            app_secret: 'a secret,
-        }
         google: {
             client_id: 'an client id'
         }
