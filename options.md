@@ -10,19 +10,18 @@
 
 # Properties
 
-| Property                              | Type       | Required | Nullable | Default                                                            | Defined by    |
-| ------------------------------------- | ---------- | -------- | -------- | ------------------------------------------------------------------ | ------------- |
-| [accountVerified](#accountverified)   | `boolean`  | Optional | No       | `false`                                                            | (this schema) |
-| [authStrategyName](#authstrategyname) | `string`   | Optional | No       | `"simple"`                                                         | (this schema) |
-| [basePath](#basepath)                 | `string`   | Optional | No       | `""`                                                               | (this schema) |
-| [cronTime](#crontime)                 | `object`   | Optional | No       | `{"expiredTokenCollector":"00 */10 * * * *"}`                      | (this schema) |
-| [email](#email)                       | `object`   | Optional | No       |                                                                    | (this schema) |
-| [events](#events)                     | `object[]` | Optional | No       | `[]`                                                               | (this schema) |
-| [expire](#expire)                     | `object`   | Optional | No       | `{"create":432000000,"forgotPassword":86400000,"login":432000000}` | (this schema) |
-| [google](#google)                     | `object`   | Optional | No       |                                                                    | (this schema) |
-| [methods](#methods)                   | `object[]` | Optional | No       | `[]`                                                               | (this schema) |
-| [scopesAllowed](#scopesallowed)       | `string[]` | Optional | No       | `["user","admin"]`                                                 | (this schema) |
-| [waterline](#waterline)               | `object`   | Optional | No       |                                                                    | (this schema) |
+| Property                              | Type       | Required | Nullable | Default                                                        | Defined by    |
+| ------------------------------------- | ---------- | -------- | -------- | -------------------------------------------------------------- | ------------- |
+| [accountVerified](#accountverified)   | `boolean`  | Optional | No       | `false`                                                        | (this schema) |
+| [authStrategyName](#authstrategyname) | `string`   | Optional | No       | `"simple"`                                                     | (this schema) |
+| [basePath](#basepath)                 | `string`   | Optional | No       | `""`                                                           | (this schema) |
+| [cronTime](#crontime)                 | `object`   | Optional | No       | `{"expiredTokenCollector":"00 */10 * * * *"}`                  | (this schema) |
+| [email](#email)                       | `object`   | Optional | No       |                                                                | (this schema) |
+| [events](#events)                     | `object[]` | Optional | No       | `[]`                                                           | (this schema) |
+| [expire](#expire)                     | `object`   | Optional | No       | `{"create":432000000,"forgotPassword":86400000,"login":false}` | (this schema) |
+| [methods](#methods)                   | `object[]` | Optional | No       | `[]`                                                           | (this schema) |
+| [scopesAllowed](#scopesallowed)       | `string[]` | Optional | No       | `["user","admin"]`                                             | (this schema) |
+| [waterline](#waterline)               | `object`   | Optional | No       |                                                                | (this schema) |
 
 ## accountVerified
 
@@ -377,7 +376,7 @@ Object with durations from creation tokens are valid.
 
 - is optional
 - type: `object`
-- default: `{"create":432000000,"forgotPassword":86400000,"login":432000000}`
+- default: `{"create":432000000,"forgotPassword":86400000,"login":false}`
 - defined in this schema
 
 ### expire Type
@@ -388,7 +387,7 @@ Object with durations from creation tokens are valid.
 | ---------------- | ------ | -------- | ----------- |
 | `create`         | number | Optional | `432000000` |
 | `forgotPassword` | number | Optional | `86400000`  |
-| `login`          | number | Optional | `432000000` |
+| `login`          |        | Optional | `false`     |
 
 #### create
 
@@ -420,46 +419,25 @@ Duration (in miliseconds) the token created in `forgotPassword` is valid
 
 #### login
 
-Duration (in milliseconds) the token created in `login` route is valid
+Duration (in milliseconds) the token created in `login` route is valid. Set to false for infinite time.
 
 `login`
 
 - is optional
-- type: `number`
-- default: `432000000`
+- type: complex
+- default: `false`
 
 ##### login Type
 
+**One** of the following _conditions_ need to be fulfilled.
+
+#### Condition 1
+
 `number`
 
-## google
+#### Condition 2
 
-`google`
-
-- is optional
-- type: `object`
-- defined in this schema
-
-### google Type
-
-`object` with following properties:
-
-| Property    | Type   | Required     |
-| ----------- | ------ | ------------ |
-| `client_id` | string | **Required** |
-
-#### client_id
-
-google client id
-
-`client_id`
-
-- is **required**
-- type: `string`
-
-##### client_id Type
-
-`string`
+`boolean`
 
 ## methods
 

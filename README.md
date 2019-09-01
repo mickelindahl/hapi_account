@@ -43,9 +43,6 @@ server.register( {
     options: { 
         accountVerified:false,
         basePath: "account",
-        google: {
-            client_id: 'an client id'
-        }
         events:[
           {type: 'onPostCreate', method:(request, next)=>{...the madgic}}  
           {type: 'onPostForgotPassword', method:(request, next)=>{...the madgic}}                  

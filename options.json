@@ -182,7 +182,7 @@
             "default": {
                 "create": 432000000,
                 "forgotPassword": 86400000,
-                "login": 432000000
+                "login": false
             },
             "type": "object",
             "properties": {
@@ -197,27 +197,20 @@
                     "type": "number"
                 },
                 "login": {
-                    "description": " Duration (in milliseconds) the  token created in `login` route is valid",
-                    "default": 432000000,
-                    "type": "number"
+                    "description": " Duration (in milliseconds) the  token created in `login` route is valid. Set to false for infinite time.",
+                    "default": false,
+                    "oneOf": [
+                        {
+                            "type": "number"
+                        },
+                        {
+                            "type": "boolean"
+                        }
+                    ]
                 }
             },
             "additionalProperties": false,
             "patterns": []
-        },
-        "google": {
-            "type": "object",
-            "properties": {
-                "client_id": {
-                    "description": "google client id",
-                    "type": "string"
-                }
-            },
-            "additionalProperties": false,
-            "patterns": [],
-            "required": [
-                "client_id"
-            ]
         },
         "methods": {
             "description": "Overide controller methods",
