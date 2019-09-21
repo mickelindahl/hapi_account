@@ -21,6 +21,7 @@
 | [expire](#expire)                     | `object`   | Optional | No       | `{"create":432000000,"forgotPassword":86400000,"login":false}` | (this schema) |
 | [methods](#methods)                   | `object[]` | Optional | No       | `[]`                                                           | (this schema) |
 | [scopesAllowed](#scopesallowed)       | `string[]` | Optional | No       | `["user","admin"]`                                             | (this schema) |
+| [token_name](#token_name)             | `string`   | Optional | No       | `"token"`                                                      | (this schema) |
 | [waterline](#waterline)               | `object`   | Optional | No       |                                                                | (this schema) |
 
 ## accountVerified
@@ -519,6 +520,21 @@ Array with names off the allowed scopes
 Array type: `string[]`
 
 All items must be of the type: `string`
+
+## token_name
+
+name of access token
+
+`token_name`
+
+- is optional
+- type: `string`
+- default: `"token"`
+- defined in this schema
+
+### token_name Type
+
+`string`
 
 ## waterline
 

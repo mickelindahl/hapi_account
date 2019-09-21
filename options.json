@@ -259,6 +259,11 @@
                 "type": "string"
             }
         },
+        "token_name": {
+            "description": "name of access token",
+            "default": "token",
+            "type": "string"
+        },
         "waterline": {
             "description": "Waterline config se (https://www.npmjs.com/package/waterline",
             "type": "object",
